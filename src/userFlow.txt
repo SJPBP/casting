@@ -1,0 +1,44 @@
+Channel
+- name
+- pageUrl
+- ...
+
+I start main.py.
+
+1) It will start by showing me channels list which I will save it in db
+2) I will choose Sony-TV.
+3) I will get all the tv shows new and old.
+4) For new I will get the name, icon, and total episodes
+5) For old, I have to go to it's page for single time because old tv shows are not updated anymore.
+6) So, I will get it name, icon, and total episodes. I will also get the page url to every episode.
+
+7) I choose tmkoc. It will go to all episodes page and get the top 12 episodes.
+8) If I have today episode then it means I have already top 12 episodes
+9) Else I will use list to get top 12 episodes.
+
+10) Then I have to get thumbnail, date, mp4 link by visiting that date episode page
+
+I am running the main.py for first time.
+
+I am going to hit the main page.
+
+I am going to extract all the channels name, icon, main page url. and save it to db
+
+Then I going to hit the sab-tv main page url. Where I will extract name, icon, total episodes, last updated for new tvshows; NITU, and link to episodes page.
+
+I will extract name and episode page.
+
+I will choose tmkoc. If I have NITU saved in db. Then I will extract all the episodes page url and save it to db.
+
+I will visit the top 12 episodes pages and extract the date, thumbnail and mp4 link.
+
+So I need a db for channel, tvshows, and episodes(I will save episode using tvshow name + date).
+
+I have to create a web server using Flask. Where It will run the background and it will call the app and send the response. It will help with running it online, on phone, and desktop.
+
+Now I should think create the app while thinking how to use it with flask.
+
+I am going to recieve requests and send response in json.
+
+This means I will have different files for different tasks but I need to know the query.
+

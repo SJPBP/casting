@@ -1,0 +1,62 @@
+I have channels, channel, tvshow, and episodes pipes.
+
+Channels:
+Needs:
+- Nothing
+
+Reponse:
+- Json with all the channels name, icon, link to main page.
+
+Channel:
+Needs:
+- Channel page url
+
+Response:
+- Json with two list.
+    - New Tv Shows:
+        - Name
+        - Icon
+        - Total episodes
+        - Last updated
+        - Link to main page
+    - Old Tv Shows:
+        - Name
+        - Link to main page
+
+TvShow:
+Needs:
+- Tv Show url
+
+Reponse:
+- Json with
+    - name
+    - icon
+    - Json of top 8 episodes:
+        - thumbnail
+        - date
+        - page url
+
+Episodes
+Needs:
+- Tv Show url
+- n - amount of episodes to find
+
+Reponse:
+- Json with
+    - name
+    - icon
+    - Json of top n episodes:
+        - thumbnail
+        - date
+        - page url
+
+Episode:
+Needs:
+- Tv Show url
+- Date of episode
+
+Reponse:
+- Json of episode:
+        - thumbnail
+        - date
+        - page url
