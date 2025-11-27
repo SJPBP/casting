@@ -1,5 +1,5 @@
-from WebScaper import WebScaper
-from EpisodeFetcher import EpisodeScraper
+from scrapers.WebScaper import WebScaper
+from scrapers.EpisodeFetcher import EpisodeFetcher
 import re
 
 class EpisodeScraper:
@@ -18,7 +18,9 @@ class EpisodeScraper:
         xpath = f'//select[@id="oneclick-episode"]//option[position() > 1 and position() <= {number + 1}]'
         self.soup = self.webScraper.find_all(xpath)
 
-        for episodesoup in self.soup:
+        for index, episodesoup in enumerate(self.soup):
+            print(f"Searching for Episode {index + 1}...")
+
 
             xpath = ""
             attr = "@value"

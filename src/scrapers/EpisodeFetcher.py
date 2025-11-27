@@ -1,4 +1,5 @@
-from WebScaper import WebScaper
+from scrapers.WebScaper import WebScaper
+from classes.EPISODE import EPISODE
 import re
 
 class EpisodeFetcher:
@@ -9,10 +10,12 @@ class EpisodeFetcher:
         
         episode = {}
 
-        episode["date"] = self.extract_date()
-        episode["episodeTitle"] = self.extract_title()
-        episode["thumbnail"] = self.extract_thumbnail()
-        episode["contentUrl"] = self.extract_content_url()
+        date = self.extract_date()
+        title = self.extract_title()
+        thumbnail = self.extract_thumbnail()
+        contentUrl = self.extract_content_url()
+
+        episode = EPISODE(date=date, thumbnail=thumbnail, contentUrl=contentUrl, title=title)
 
         return episode
 

@@ -51,6 +51,7 @@ class TVShowFetcher:
         xpath = '//div[@class="story-section"]'
         attr = "text()"
 
-        return self.webScraper.find(xpath=xpath, attr=attr)
+        desc = self.webScraper.find(xpath=xpath, attr=attr).strip()
+        return desc
 
 

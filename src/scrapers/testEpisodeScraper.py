@@ -1,4 +1,5 @@
-from EpisodeScraper import EpisodeScraper
+from scrapers.EpisodeScraper import EpisodeScraper
+
 filePath = "/home/fake/Documents/ApneTV_Home_Page.html"
 filePath = "/home/fake/Documents/Sab-TV India Online _ Serials & Discussions.html"
 filePath = "/home/fake/Documents/Itti Si Khushi 21st November.html"
