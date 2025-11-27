@@ -22,8 +22,8 @@ class TVShowScraper:
 
             self.soup = tvShowSoup
 
-            tvShow = {}
-            tvShow["TvShow"] = {}
+            tvShows = {}
+            tvShows["TvShows"] = []
 
             pageUrl = self.extract_new_page_url()
 

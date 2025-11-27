@@ -15,8 +15,10 @@ class TVShowFetcher:
         totalEpisodes = self.extract_total_episodes()
         description = self.extract_description()
         channel = self.extract_channel_name()
-
-        tvShow = TVSHOW(channel=channel, name=name, 
+        
+        tvShow = {}
+            
+        tvShow["TVShow"] = TVSHOW(channel=channel, name=name, 
                         thumbnail=thumbnail, totalEpisodes=totalEpisodes, 
                         description=description)
 

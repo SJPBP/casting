@@ -8,5 +8,14 @@ print(filePath)
 cs = EpisodeScraper(filePath=filePath)
 
 # print(cs.get_episode())
-print(cs.get_episodes())
+eps = cs.get_episodes(1)
+print(eps)
 
+ep = eps["Episodes"]
+ep = ep[0]
+
+print("Apnetv")
+print(ep.get_date_in_mysql_format())
+print(ep.get_date_in_apnetv_format())
+print(ep.update_content_type())
+print(ep)
