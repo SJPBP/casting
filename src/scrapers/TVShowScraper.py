@@ -1,5 +1,5 @@
-from WebScaper import WebScaper
-from TVShowFetcher import TVShowFetcher
+from scrapers.WebScaper import WebScaper
+from scrapers.TVShowFetcher import TVShowFetcher
 import re
 
 class TVShowScraper:
@@ -57,9 +57,11 @@ class TVShowScraper:
         newTvShowXpath = f'//div[@data-name="{name}"]'
         
         try:
+            print("Finding new TV")
             self.soup = self.webScraper.find(newTvShowXpath)
 
             pageUrl = self.extract_new_page_url()
+            print("DONE")
         except Exception:
             pageUrl = None # Making sure there is no problem for next operations
             print("Could't find in currently running tv shows")

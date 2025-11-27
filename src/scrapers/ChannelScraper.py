@@ -1,4 +1,4 @@
-from WebScaper import WebScaper
+from scrapers.WebScaper import WebScaper
 
 class ChannelScraper:
     def __init__(self, pageUrl: str | None = None, filePath: str | None = None) -> None:

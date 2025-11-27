@@ -1,5 +1,5 @@
 from bs4.filter import SoupStrainer
-from PageFetcher import PageFetcher
+from scrapers.PageFetcher import PageFetcher
 
 class WebScaper:
     def __init__(self, pageUrl: str | None = None, filePath: str | None = None) -> None:

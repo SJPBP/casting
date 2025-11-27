@@ -1,5 +1,5 @@
-from WebScaper import WebScaper
-from CLASS.TVSHOW import TVSHOW
+from scrapers.WebScaper import WebScaper
+from classes.TVSHOW import TVSHOW
 import re
 
 class TVShowFetcher:
