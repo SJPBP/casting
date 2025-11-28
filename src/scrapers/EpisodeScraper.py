@@ -11,7 +11,7 @@ class EpisodeScraper:
         Return list numbers of episodes
         """
         episodes = {}
-        episodes["Episodes"] = []
+        episodes = []
 
         # Get top {number} episodes links
         # Choose option 2 and above, option 1 is junk
@@ -33,7 +33,7 @@ class EpisodeScraper:
 
             episode = episodeFetcher.get_episode()
 
-            episodes["Episodes"].append(episode)
+            episodes.append(episode)
 
         return episodes
 

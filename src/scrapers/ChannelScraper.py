@@ -11,8 +11,9 @@ class ChannelScraper:
         xpath = '//div[@class="channel-title-logo"]'
         self.soup = self.webScraper.find_all(xpath)
 
-        channels = {}
-        channels["Channels"] = []
+        # channels = {}
+        # channels["Channels"] = []
+        channels = []
 
         for channel_soup in self.soup:
             self.soup = channel_soup
@@ -23,7 +24,7 @@ class ChannelScraper:
             channel["Channel"]["channelIcon"] = self.extract_icon()
             channel["Channel"]["channelUrl"] = self.extract_page_url()
 
-            channels["Channels"].append(channel)
+            channels.append(channel)
 
 
         return channels
@@ -33,14 +34,17 @@ class ChannelScraper:
         xpath = f'//h2[text()="{name}"]'
         self.soup = self.webScraper.find(xpath)
        
+        channels = []
         channel = {}
 
         channel["ChannelName"] = self.extract_name(singleSearch=True)
         channel["channelIcon"] = self.extract_icon(singleSearch=True)
         channel["channelUrl"] = self.extract_page_url(singleSearch=True)
 
+        channels.append(channel)
 
-        return channel
+
+        return channels
 
     
     def extract_name(self, singleSearch: bool = False):

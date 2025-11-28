@@ -10,8 +10,7 @@ class TVShowScraper:
         """
         Return list of tv shows
         """
-        tvShows = {}
-        tvShows["TvShows"] = []
+        tvShows = []
 
         # Looking for current tv shows
         xpath = '//li[@class="serial-item"]'
@@ -23,14 +22,13 @@ class TVShowScraper:
             self.soup = tvShowSoup
 
             tvShows = {}
-            tvShows["TvShows"] = []
 
             pageUrl = self.extract_new_page_url()
 
             tvShowFetcher = TVShowFetcher(pageUrl=pageUrl)
             tvShow = tvShowFetcher.get_tv_show()
 
-            tvShows["TvShows"].append(tvShow)
+            tvShows.append(tvShow)
 
         # Looking for old tv shows
         xpath = '//ul[@class="old-link-list"]/li'
@@ -41,14 +39,13 @@ class TVShowScraper:
 
             self.soup = tvShowSoup
             tvShow = {}
-            tvShow["TvShow"] = {}
             
             pageUrl = self.extract_old_page_url()
 
             tvShowFetcher = TVShowFetcher(pageUrl=pageUrl)
             tvShow = tvShowFetcher.get_tv_show()
 
-            tvShows["TvShows"].append(tvShow)
+            tvShows.append(tvShow)
 
         return tvShows
 
@@ -56,6 +53,7 @@ class TVShowScraper:
     def get_tv_show(self, name: str):
         newTvShowXpath = f'//div[@data-name="{name}"]'
         
+        # Chechk tv show in currently running shows
         try:
             print("Finding new TV")
             self.soup = self.webScraper.find(newTvShowXpath)
@@ -66,6 +64,7 @@ class TVShowScraper:
             pageUrl = None # Making sure there is no problem for next operations
             print("Could't find in currently running tv shows")
 
+        # Check tv show in old shows
         if pageUrl is None:
             oldTvShowXpath = f'//ul[@class="old-link-list"]/li/a[@title="{name}"]'
 
@@ -73,11 +72,13 @@ class TVShowScraper:
 
             pageUrl = self.extract_old_page_url(singleSearch=True)
 
+        tvShows = []
         tvShowFetcher = TVShowFetcher(pageUrl=pageUrl)
 
         tvShow = tvShowFetcher.get_tv_show()
-
-        return tvShow
+            
+        tvShows.append(tvShow)
+        return tvShows
 
     
     def extract_new_page_url(self, singleSearch: bool = False):
