@@ -12,16 +12,11 @@ class ChannelScraper:
         xpath = '//div[@class="channel-title-logo"]'
         self.soup = self.webScraper.find_all(xpath)
 
-        # channels = {}
-        # channels["Channels"] = []
         channels = []
 
         for index, channel_soup in enumerate(self.soup):
             print(f"Searching for Channel {index + 1}...")
             self.soup = channel_soup
-            channel = {}
-            
-            channel["Channel"] = {}
 
             name = self.extract_name()
             logoUrl = self.extract_icon()

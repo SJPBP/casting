@@ -8,15 +8,13 @@ class EpisodeFetcher:
 
     def get_episode(self):
         
-        episode = {}
-
         date = self.extract_date()
         title = self.extract_title()
         thumbnail = self.extract_thumbnail()
         contentUrl = self.extract_content_url()
 
         episode = EPISODE(date=date, thumbnail=thumbnail, contentUrl=contentUrl, title=title)
-
+        episode.contentType = episode.update_content_type()
         return episode
 
     

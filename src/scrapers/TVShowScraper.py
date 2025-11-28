@@ -21,8 +21,6 @@ class TVShowScraper:
 
             self.soup = tvShowSoup
 
-            tvShows = {}
-
             pageUrl = self.extract_new_page_url()
 
             tvShowFetcher = TVShowFetcher(pageUrl=pageUrl)

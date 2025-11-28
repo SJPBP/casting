@@ -10,7 +10,6 @@ class EpisodeScraper:
         """
         Return list numbers of episodes
         """
-        episodes = {}
         episodes = []
 
         # Get top {number} episodes links
@@ -20,7 +19,6 @@ class EpisodeScraper:
 
         for index, episodesoup in enumerate(self.soup):
             print(f"Searching for Episode {index + 1}...")
-
 
             xpath = ""
             attr = "@value"

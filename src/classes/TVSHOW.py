@@ -12,5 +12,17 @@ class TVSHOW:
     name: str
     thumbnail: str
     totalEpisodes: int
+    pageUrl: str
     # None = None means set default value to None like name: str | None = None
     description: str 
+
+    @property
+    def json(self):
+        return  {
+            "Channel": self.channel,
+            "Name": self.name,
+            "Thumbnail": self.thumbnail,
+            "TotalEpisodes": self.totalEpisodes,
+            "PageUrl": self.pageUrl,
+            "Description": self.description
+        }

@@ -4,10 +4,20 @@ from datetime import datetime
 @dataclass
 class EPISODE:
     date: str 
-    thumbnail: str 
-    contentUrl: str 
-    title: str | None
+    thumbnail: str | None = None
+    contentUrl: str | None = None
+    title: str | None = None
     contentType: str | None = None
+
+    @property
+    def json(self):
+        return  {
+            "Date": self.date,
+            "Thumbnail": self.thumbnail,
+            "ContentUrl": self.contentUrl,
+            "ContentType": self.contentType,
+            "Title": self.title
+        }
 
     def update_content_type(self) -> str:
         if self.contentUrl:
@@ -18,24 +28,23 @@ class EPISODE:
         """Add th, st, dn, rd to numercal dates"""
         return str(n) + ("th" if 4 <= n % 100 <=20 else { 1:"st", 2:"nd", 3:"rd"}.get(n%10, "th"))
     
-    def get_date_in_mysql_format(self) -> str | bool:
+    def convert_date_to_mysql_format(self) -> str | bool:
         """Returns string date in format used in mysql db"""
-        mysql_format = "%d-%m-%Y"
+        mysql_format = "%Y-%m-%d"
         
         if self.date_in_mysql_format(mysql_format):
             return self.date
 
         return self.date_in_apnetv_format(mysql_format)
         
-    def get_date_in_apnetv_format(self) -> str:
+    def convert_date_to_apnetv_format(self) -> str:
         """Returns string date in format used in ApneTv Website"""
         apneTV_format = "%d %B %Y"
-        
-        if not self.date_in_apnetv_format(apneTV_format) is str:
-            return self.date
 
+        date = self.date.strftime(apneTV_format)
+        
         # Format the date into apne tv format then spilt by space
-        day, month, year = self.date.split()
+        day, month, year = date.split()
 
         # Add th to date numbers
         f_day = self.ordinal(int(day))

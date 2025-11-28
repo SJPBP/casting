@@ -14,16 +14,21 @@ class TVShowFetcher:
         thumbnail = self.extract_icon()
         totalEpisodes = self.extract_total_episodes()
         description = self.extract_description()
+        pageUrl = self.extract_page_url()
         channel = self.extract_channel_name()
-        
-        tvShow = {}
             
-        tvShow["TVShow"] = TVSHOW(channel=channel, name=name, 
+        tvShow = TVSHOW(channel=channel, name=name, 
                         thumbnail=thumbnail, totalEpisodes=totalEpisodes, 
-                        description=description)
+                        pageUrl=pageUrl, description=description)
 
         return tvShow
     
+    def extract_page_url(self):
+        xpath = '//form[@id="searchform"]'
+        attr = '@action'
+        
+        return self.webScraper.find(xpath=xpath, attr=attr)
+
     def extract_name(self):
         xpath = '//div[@class="cont-img"]/figure/img'
         attr = '@alt'
