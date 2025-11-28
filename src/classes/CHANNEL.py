@@ -11,9 +11,14 @@ class CHANNEL:
     name: str
     logoUrl: str 
     pageUrl: str
+    id: int | None = None
 
-    def __str__(self):
-        return {'ChannelName': f'{self.name}', 'channelIcon': f'{self.logoUrl}', 'pageUrl': f'{self.pageUrl}'}
+    @property
+    def json(self):
+        return  {
+            "name": self.name, 
+             "logoUrl": self.logoUrl,
+             "pageUrl": self.pageUrl,
+             "id": self.id
+        }
 
-    def __repr__(self):
-        return {'ChannelName': f'{self.name}', 'channelIcon': f'{self.logoUrl}', 'pageUrl': f'{self.pageUrl}'}

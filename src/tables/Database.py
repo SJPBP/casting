@@ -26,12 +26,12 @@ class Database:
             cur.execute(query, params or ())
         except mysql.connector.errors.IntegrityError as e: 
             if e.errno == 1062:
-                print("Duplicate entry, skipping!")
+                print("Creating Duplicate entry, skipping!")
 
         if fetchone:
             result = cur.fetchone()
         if fetchall:
-            result = cur.fetchall()[0]
+            result = cur.fetchall()
         else:
             result = None
 

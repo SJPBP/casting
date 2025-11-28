@@ -1,4 +1,5 @@
 from scrapers.WebScaper import WebScaper
+from classes.CHANNEL import CHANNEL
 
 class ChannelScraper:
     def __init__(self, pageUrl: str | None = None, filePath: str | None = None) -> None:
@@ -15,15 +16,18 @@ class ChannelScraper:
         # channels["Channels"] = []
         channels = []
 
-        for channel_soup in self.soup:
+        for index, channel_soup in enumerate(self.soup):
+            print(f"Searching for Channel {index + 1}...")
             self.soup = channel_soup
             channel = {}
+            
             channel["Channel"] = {}
 
-            channel["Channel"]["ChannelName"] = self.extract_name()
-            channel["Channel"]["channelIcon"] = self.extract_icon()
-            channel["Channel"]["channelUrl"] = self.extract_page_url()
+            name = self.extract_name()
+            logoUrl = self.extract_icon()
+            pageUrl = self.extract_page_url()
 
+            channel = CHANNEL(name=name, logoUrl=logoUrl, pageUrl=pageUrl, id=None)
             channels.append(channel)
 
 
@@ -35,14 +39,14 @@ class ChannelScraper:
         self.soup = self.webScraper.find(xpath)
        
         channels = []
-        channel = {}
 
-        channel["ChannelName"] = self.extract_name(singleSearch=True)
-        channel["channelIcon"] = self.extract_icon(singleSearch=True)
-        channel["channelUrl"] = self.extract_page_url(singleSearch=True)
+        name = self.extract_name(singleSearch=True)
+        logoUrl = self.extract_icon(singleSearch=True)
+        pageUrl = self.extract_page_url(singleSearch=True)
+
+        channel = CHANNEL(name=name, logoUrl=logoUrl, pageUrl=pageUrl, id=None)
 
         channels.append(channel)
-
 
         return channels
 
@@ -65,7 +69,6 @@ class ChannelScraper:
             backtrack = '/..'
             xpath = backtrack + xpath
 
-
         return self.webScraper.find(xpath=xpath, soup=self.soup, attr=attr)
 
     
@@ -76,6 +79,5 @@ class ChannelScraper:
         if singleSearch:
             backtrack = '/..'
             xpath = backtrack 
-
 
         return self.webScraper.find(xpath=xpath, soup=self.soup, attr=attr)
