@@ -18,10 +18,10 @@ class EpisodeService:
         Retrieve episode data for the selected episode number of the specified TV show.
 
         Parameters:
+        tvshow (str): The title of the TV show for which data is being retrieved.
         pageUrl (str): URL of the TV show page on ApneTV.
         numberOfEpisodes (int): The total number of episodes for which to retrieve data.
         oldShow (bool): Indicates whether the TV show has concluded; this value is always `False`. 
-        tvshow (str): The title of the TV show for which data is being retrieved.
         """
         # Connect to db and use table named after tvshow 
         table = EpisodeTable(self.db, tvshowName=tvshow)
