@@ -31,6 +31,7 @@ class ChannelService:
 
         response = {}
         response["Channels"] = []
+        response["Raw"] = []
 
         # Obtain data of channels stored in database
         channels = self.table.get_all()
@@ -44,7 +45,7 @@ class ChannelService:
 
         # Put the data for each channel in json
         for chn in channels:
-            response["Channels"].append(chn.json)
+            response["Channels"].append(chn)
 
         return response
 
@@ -60,6 +61,7 @@ class ChannelService:
         """
         response = {}
         response["Channels"] = []
+        response["Raw"] = []
 
         # Obtain data of channel stored in database
         channel = self.table.get_by_name(name)
@@ -72,7 +74,7 @@ class ChannelService:
             self.table.insert(channel["Channels"][0])
 
         # Put the data of channel in json
-        response["Channels"].append(channel.json)
+        response["Channels"].append(channel)
 
         return response
 

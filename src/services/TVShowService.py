@@ -38,7 +38,7 @@ pageUrl (str): URL of the channel page on ApneTV.
             tvshows = table.insert_all(tvshows)
 
         for tvshow in tvshows:
-            response["TVShows"].append(tvshow.json)
+            response["TVShows"].append(tvshow)
 
         return response
 
@@ -65,7 +65,7 @@ pageUrl (str): URL of the channel page on ApneTV.
             tvshow = scraper.get_tvshow(name)
             table.insert(tvshow["TVShows"][0])
 
-        response["TVShows"].append(tvshow.json)
+        response["TVShows"].append(tvshow)
 
         return response
 

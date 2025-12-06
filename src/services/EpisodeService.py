@@ -42,7 +42,7 @@ class EpisodeService:
 
         for episode in episodes:
             episode.date = episode.convert_date_from_mysql_to_apnetv_format()
-            response["Episodes"].append(episode.json)
+            response["Episodes"].append(episode)
 
         return response
 
@@ -73,7 +73,7 @@ class EpisodeService:
         # Convert date into apneTV format
         episode.date = episode.convert_date_from_mysql_to_apnetv_format()
 
-        response["Episodes"].append(episode.json)
+        response["Episodes"].append(episode)
 
         return response
 
