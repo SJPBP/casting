@@ -28,7 +28,7 @@ pageUrl (str): URL of the channel page on ApneTV.
         response["TVShows"] = []
 
         # Obtain TV Show data from the database.
-        tvshows = table.get_all(self.channel)
+        tvshows = table.get_all(channel)
 
         # TV show data is not in the database.
         if tvshows is None:
@@ -61,7 +61,7 @@ pageUrl (str): URL of the channel page on ApneTV.
 
         if tvshow is None:
             # Obtain the data from the website
-            scraper = TVShowScraper(self.pageUrl)
+            scraper = TVShowScraper(pageUrl)
             tvshow = scraper.get_tvshow(name)
             table.insert(tvshow["TVShows"][0])
 

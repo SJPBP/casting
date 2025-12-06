@@ -13,14 +13,15 @@ class EpisodeService:
         self.db = db
         
 
-    def get_episodes(self, tvshow: str, pageUrl: str, numberOfEpisodes: int, oldShow: bool = False):
+    def get_episodes(self, tvshow: str, pageUrl: str, startNumber: int, endNumber: int, oldShow: bool = False):
         """
         Retrieve episode data for the selected episode number of the specified TV show.
 
         Parameters:
         tvshow (str): The title of the TV show for which data is being retrieved.
         pageUrl (str): URL of the TV show page on ApneTV.
-        numberOfEpisodes (int): The total number of episodes for which to retrieve data.
+        startNumber (int): The starting episode number (inclusive). Defaults to 1.
+        endNumber (int): The ending episode number (inclusive). Defaults to 8.
         oldShow (bool): Indicates whether the TV show has concluded; this value is always `False`. 
         """
         # Connect to db and use table named after tvshow 
@@ -30,17 +31,17 @@ class EpisodeService:
         response["Episodes"] = []
 
         # Obtain Episode data from the database.
-        episodes = table.get_all()
+        episodes = table.get_all(startNumber=startNumber, endNumber=endNumber)
 
         # Episode data is not in the database.
         if episodes is None:
             # Obtain the data from the website
             scraper = EpisodeScraper(pageUrl)
-            episodes = scraper.get_episodes(numberOfEpisodes)
+            episodes = scraper.get_episodes(startNumber=startNumber, endNumber=endNumber)
             episodes = table.insert_all(episodes)
 
         for episode in episodes:
-            episode.date = episode.convert_date_to_apnetv_format()
+            episode.date = episode.convert_date_from_mysql_to_apnetv_format()
             response["Episodes"].append(episode.json)
 
         return response
@@ -65,11 +66,12 @@ class EpisodeService:
         # Episode data is not in the database.
         if episode is None:
             # Obtain the data from the website
-            scraper = episodeScraper(self.pageUrl)
-            episode = scraper.get_episode(name)
-            table.insert(episode["episodes"][0])
+            scraper = EpisodeScraper(pageUrl=pageUrl)
+            episode = scraper.get_episode(date)
+            table.insert(episode)
 
-        episode.date = episode.convert_date_to_apnetv_format()
+        # Convert date into apneTV format
+        episode.date = episode.convert_date_from_mysql_to_apnetv_format()
 
         response["Episodes"].append(episode.json)
 
