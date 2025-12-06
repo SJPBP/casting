@@ -42,12 +42,34 @@ class EpisodeTable:
                 VALUES (%s, %s, %s, %s, %s); 
         """
 
-        self.db.execute(sql, params=(episode.convert_date_to_mysql_format(),episode.contentUrl, episode.title, episode.contentType, episode.thumbnail,))
+        self.db.execute(sql, params=(episode.convert_date_apnetv_to_mysql_format(),episode.contentUrl, episode.title, episode.contentType, episode.thumbnail,))
     
-    def get_all(self) -> list[EPISODE] | None:
-        """Return all the data inside the database"""
+    def get_all(self, startNumber: int, endNumber: int) -> list[EPISODE] | None:
+        """
+        Retrieve a subset of data from the database based on specified range.
+
+        Parameters:
+        startNumber (int): The starting index (inclusive) for retrieving records.
+        endNumber (int): The ending index (inclusive) for retrieving records.
+
+        Returns:
+        list[EPISODE] | None: A list of EPISODE data from the database, or None if no records are found.
+
+        Notes:
+        - The number of results to retrieve is calculated as End.
+        - Records are skipped based on the Offset, defined as Start - 1.
+        - If the result count is less than 0, it is adjusted to 0.
+        """
+
+        # limit = endNumber - startNumber + 1
+        offset = startNumber - 1
+
+        if offset < 0:
+            offset = 0
+            
         sql = f"""
-            SELECT * FROM {self.name};
+            SELECT * FROM (SELECT * FROM {self.name} ORDER BY date LIMIT {endNumber} OFFSET {offset}) as limited_dates ORDER BY date DESC;
+
         """
 
         rows = self.db.execute(sql, params=None, fetchall=True)
@@ -71,7 +93,7 @@ class EpisodeTable:
            SELECT date, link, title, type, thumbnail from {self.name} WHERE date = (%s);
         """
 
-        row = self.db.execute(sql, params=(episode.convert_date_to_mysql_format(),), fetchall=True)
+        row = self.db.execute(sql, params=(episode.convert_date_apnetv_to_mysql_format(),), fetchall=True)
 
         if not row:
             return None
