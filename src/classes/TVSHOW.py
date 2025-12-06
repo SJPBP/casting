@@ -10,11 +10,11 @@ from dataclasses import dataclass
 class TVSHOW:
     channel: str 
     name: str
-    thumbnail: str
-    totalEpisodes: int
     pageUrl: str
+    thumbnail: str | None = None
+    totalEpisodes: int | None = None
     # None = None means set default value to None like name: str | None = None
-    description: str 
+    description: str | None = None
 
     @property
     def json(self):

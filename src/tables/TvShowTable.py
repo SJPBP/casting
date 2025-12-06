@@ -72,7 +72,6 @@ class TvShowTable:
         return tvshows
 
 
-
     def get_by_channel(self, tvShow: TVSHOW):
         sql = f"""
            SELECT name, channel, thumbnail, page_url, description, totalEpisodes from {self.channel} WHERE name = (%s);
@@ -82,6 +81,7 @@ class TvShowTable:
 
         if not row:
             return None
+        row = row[0]
         return TVSHOW(channel=row["channel"], 
                       name=row["name"], 
                       thumbnail=row["thumbnail"], 

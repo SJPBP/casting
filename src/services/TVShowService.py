@@ -52,12 +52,13 @@ pageUrl (str): URL of the channel page on ApneTV.
         name (str): The title of the TV show for which data is being retrieved.
         """
         table = TvShowTable(self.db, channel=channel)
+        show = TVSHOW(channel=channel, pageUrl=pageUrl, name=name)
 
         response = {}
         response["TVShows"] = []
 
         # TV show data is not in the database.
-        tvshow = table.get_by_channel(name)
+        tvshow = table.get_by_channel(show)
 
         if tvshow is None:
             # Obtain the data from the website
