@@ -12,9 +12,9 @@ class EpisodeTable:
             CREATE TABLE IF NOT EXISTS {self.name} (
                     date DATE PRIMARY KEY, 
                     link VARCHAR(500),
-                    title VARCHAR(500),
-                    type VARCHAR(100),
-                    thumbnail VARCHAR(500)
+                    title VARCHAR(500) NULL,
+                    type VARCHAR(100) NULL,
+                    thumbnail VARCHAR(500) NULL
                     );
         """
         self.db.execute(sql)
