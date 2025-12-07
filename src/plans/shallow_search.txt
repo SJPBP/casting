@@ -1,0 +1,33 @@
+When I am obtaining data for tvshows using TVShow Service, I want to also obtain the
+all the episodes data.
+
+In tv show page, there is list of episodes. In the list, there is episode data and
+link to that episode page.
+
+I want to create the table for the tv show but only add date and link.
+
+I don't want to go through the list everytime so I am going to put a requirment.
+
+First, Go to database and get the data of toppest episode or newest.
+
+2. If I get a response
+    1. So this means I have a episode data for newest episode called N.
+        When I getting the data for the channel. I will also get the data for episode but I will get data newer than N. E.g. I get response for Dec 1, 2025. Today is Dec 7, 2025. Then I will start the loop at Dec 7 and end it at Dec 1 but not get data for Dec 1 because it already in database.
+
+3. If I don't get the response
+    1. So it means I will loop throught the whole list
+
+Needs:
+I will need EpisodeTable, EPISODE dataclass and TVShowScraper
+
+Changes:
+I need to change EpisodeTable so I can create entery with only date and link.
+If there is no table it is created it is empty.
+
+I need to change the TVShowScraper, so it uses EpisodeTable to get the data and EpisodeScraper to get the data which is missing.
+I will create separate function that only job is to get data obtained from scraper and add it to table.
+
+I need to add a new method shallow_search, which only job to get list
+of the episodes. I will use EPISODE dataclass to save the data.
+I will be sending EPISODE with TABlE data when calling get_tvshow function of class
+TVShowScraper.
