@@ -1,5 +1,7 @@
+from classes import EPISODE
 from scrapers.TVShowScraper import TVShowScraper
 from tables.TvShowTable import TvShowTable
+from tables.EpisodeTable import EpisodeTable
 from classes.TVSHOW import TVSHOW
 from tables.Database import Database
 
@@ -12,6 +14,12 @@ class TVShowService:
         db (Database): Connect to database
         """
         self.db = db
+    
+    def update_episodes(self, tvshowName: str, episodes):
+        """I will add the data to episode table"""
+        episodeTable = EpisodeTable(self.db, tvshowName)
+        episodeTable.insert_all(episodes)
+    
 
     def get_tvshows(self, channel: str, pageUrl: str):
         """
@@ -65,6 +73,10 @@ pageUrl (str): URL of the channel page on ApneTV.
             scraper = TVShowScraper(pageUrl)
             tvshow = scraper.get_tvshow(name)
             table.insert(tvshow["TVShows"][0])
+
+        episodeTable = EpisodeTable(self.db, tvshow.name)
+
+        
 
         response["TVShows"].append(tvshow)
 
