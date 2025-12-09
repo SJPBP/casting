@@ -4,6 +4,7 @@ from datetime import datetime
 @dataclass
 class EPISODE:
     date: str 
+    pageUrl: str | None = None
     thumbnail: str | None = None
     contentUrl: str | None = None
     title: str | None = None
@@ -19,7 +20,8 @@ class EPISODE:
             "Thumbnail": self.thumbnail,
             "ContentUrl": self.contentUrl,
             "ContentType": self.contentType,
-            "Title": self.title
+            "Title": self.title,
+            "PageUrl": self.pageUrl
         }
 
     def update_content_type(self) -> str:

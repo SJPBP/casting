@@ -6,6 +6,42 @@ class TVShowFetcher:
     def __init__(self, pageUrl: str | None = None, filePath: str | None = None) -> None:
         self.webScraper = WebScaper(pageUrl=pageUrl, filePath=filePath)
 
+    def shallow_search(self):
+        """
+        Retrieve list of all episode date and it's page url
+
+        Returns:
+        list: Contains episode data for all episodes but only find date and page url
+        """
+        # Loop through all the list of episodes on page
+        channel = self.extract_channel_name()
+
+        xpath = f'//select[@id="oneclick-episode"]//option[position() > 1 and position() <= 9999999999999]'
+        soup = self.webScraper.find_all(xpath)
+
+        episodes = []
+        episode = {}
+
+        for index, episodesoup in enumerate(soup):
+            # Find the date
+            xpath = ""
+            attr = "text()"
+            date = self.webScraper.find(xpath=xpath, attr=attr, soup=episodesoup)
+            episode["date"] = date
+
+
+            # Find the page url
+            xpath = ""
+            attr = "@value"
+            episodePageUrl = self.webScraper.find(xpath=xpath,soup=episodesoup, attr=attr)
+
+            episodePageUrl = episodePageUrl.split("#")[-1]
+            episode["url"] = episodePageUrl
+
+            episodes.append(episode)
+            
+        return episodes
+
     def get_tv_show(self):
         xpath = "/html/body"
         self.soup = self.webScraper.find(xpath=xpath)

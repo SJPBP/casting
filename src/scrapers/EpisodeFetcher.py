@@ -5,6 +5,7 @@ import re
 class EpisodeFetcher:
     def __init__(self, pageUrl: str | None = None, filePath: str | None = None) -> None:
         self.webScraper = WebScaper(pageUrl=pageUrl, filePath=filePath)
+        self.pageUrl = pageUrl
 
     def get_episode(self):
         
@@ -13,7 +14,7 @@ class EpisodeFetcher:
         thumbnail: str = str(self.extract_thumbnail())
         contentUrl: str = str(self.extract_content_url())
 
-        episode = EPISODE(date=date, thumbnail=thumbnail, contentUrl=contentUrl, title=title)
+        episode = EPISODE(date=date, pageUrl=self.pageUrl, thumbnail=thumbnail, contentUrl=contentUrl, title=title)
         episode.contentType = episode.update_content_type()
         return episode
 

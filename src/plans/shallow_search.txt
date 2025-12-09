@@ -18,7 +18,7 @@ First, Go to database and get the data of toppest episode or newest.
     1. So it means I will loop throught the whole list
 
 Needs:
-I will need EpisodeTable, EPISODE dataclass and TVShowScraper
+I will need EpisodeTable, EPISODE dataclass and EpisodeScraper
 
 Changes:
 I need to change EpisodeTable so I can create entery with only date and link.

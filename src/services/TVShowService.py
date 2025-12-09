@@ -1,9 +1,12 @@
-from classes import EPISODE
 from scrapers.TVShowScraper import TVShowScraper
+from scrapers.EpisodeScraper import EpisodeScraper
+
 from tables.TvShowTable import TvShowTable
 from tables.EpisodeTable import EpisodeTable
-from classes.TVSHOW import TVSHOW
 from tables.Database import Database
+
+from classes.TVSHOW import TVSHOW
+from classes import EPISODE
 
 class TVShowService:
     def __init__(self, db: Database):
@@ -15,12 +18,7 @@ class TVShowService:
         """
         self.db = db
     
-    def update_episodes(self, tvshowName: str, episodes):
-        """I will add the data to episode table"""
-        episodeTable = EpisodeTable(self.db, tvshowName)
-        episodeTable.insert_all(episodes)
     
-
     def get_tvshows(self, channel: str, pageUrl: str):
         """
         Retrieve data for the TV shows in given channel.

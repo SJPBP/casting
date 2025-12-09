@@ -12,6 +12,10 @@ class PageFetcher:
         "http": "http://nysekoqg-US-rotate:4ig88f7owcpk@p.webshare.io:80/",
         "https": "http://nysekoqg-US-rotate:4ig88f7owcpk@p.webshare.io:80/"
         }
+        self.proxies = {
+            "http": "http://wdgwqags:e0wk07u371r1@142.111.48.253:7030/",
+            "https": "http://wdgwqags:e0wk07u371r1@142.111.48.253:7030/"
+        }
 
 
     def get_soup(self, pageUrl: str | None = None, filePath: str | None = None):
