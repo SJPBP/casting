@@ -1,0 +1,25 @@
+"/channels"
+Input: None
+Output: Data about all the channels
+
+"/channel/<name>"
+Input: name of channel
+Output: Data about about a specfic channel
+
+"/tvshows/<channelName>/<path:url>"
+Input: Name of channel and url to channel
+Output: Data about all the tvshows on the channel
+
+"/tvshow/<channelName>/<path:url>/<string:tvshowName>
+Input: Name of channel, it's url, and name of tvshow
+Output: Data about that named tvshow 
+
+"/episode/<tvshowName>/<path:url>/<string:date>"
+Input: Name of tvshow, it's url, and date of episode
+Output: Data about that specfic episode
+
+"/episodes/<string:tvshowName>/<path:url>/<int:start>/<int:end>"
+Input: Name of tvshow, it's url, and index number starting from 1 to n, increment 10 spaces e.g. 1-10, 11-20, 21-30
+Output: Data about that specfic episode
+
+
