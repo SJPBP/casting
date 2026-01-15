@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>Channels</title>
+</head>
+
+<body>
+  <h1>TVShows</h1>
+  <hr />
+  {% for tvshow in tvshows %}
+  <a href="http://127.0.0.1:5000/episodes/{{tvshow.name}}/{{tvshow.pageUrl}}">{{tvshow.name}}</a>
+  <br>
+  <img src="{{tvshow.thumbnail}}" alt="{{tvshow.name}} height=" 100" width="100">
+  <br>
+  <h4>Total Episodes: {{tvshow.totalEpisodes}}</h4>
+  <h4>Description: {{tvshow.description}}</h4>
+  {% endfor %}
+</body>
+
+</html>

@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>Channels</title>
+</head>
+
+<body>
+  <h1>Channels</h1>
+  <hr />
+  {% for channel in channels %}
+  <a href="http://127.0.0.1:5000/tvshows/{{channel.name}}/{{channel.pageUrl}}">{{channel.id}}. {{channel.name}}</a>
+  <br>
+  <img src="{{channel.logoUrl}}" alt="{{channel.name}} height="100" width="100">
+  <br>
+  {% endfor %}
+</body>
+
+</html>
