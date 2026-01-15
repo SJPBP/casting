@@ -1,25 +1,28 @@
-from flask import Flask
+from flask import Flask, render_template, request
 from tables.Database import Database
 from classes.CAST import CAST
+from classes.EPISODE import EPISODE
 from services.ChannelService import ChannelService
 from services.TVShowService import TVShowService
 from services.EpisodeService import EpisodeService
 from caster.Caster import Caster
 import time
+import requests
 
 app = Flask(__name__)
 
 db = Database()
 channelService = ChannelService(db)
 tVShowService = TVShowService(db)
-episodeService = EpisodeService(db)
 caster = Caster()
-cast = None
+# cast = None
 
 @app.route("/channels")
 def get_channels():
     channels = channelService.get_channels()
-    return channels
+    # print(channels)
+    # return channels
+    return render_template('channels.html', channels=channels["Channels"])
 
 
 @app.route("/channel/<name>")
@@ -31,7 +34,10 @@ def get_channel(name):
 def get_tvshows(channelName, url):
     channelName = channelName.replace("-", "_")
     print(channelName, url)
-    tvshow = tVShowService.get_tvshows(channel=channelName, pageUrl=url)
+    tvshows = tVShowService.get_tvshows(channel=channelName, pageUrl=url)
+    print(tvshows)
+    return render_template('tvshows.html', tvshows=tvshows["TVShows"])
+
     return tvshow
 
 @app.route("/tvshow/<channelName>/<path:url>/<string:tvshowName>", methods=['GET'])
@@ -48,65 +54,114 @@ def get_episode(tvshowName, url, date):
     episode =  episodeService.get_episode(tvshow=tvshowName, pageUrl=url, date=date)
     return episode
 
-@app.route("/episodes/<string:tvshowName>/<path:url>/<int:start>/<int:end>")
-def get_episodes(tvshowName, url, start, end):
+@app.route("/episodes/<string:tvshowName>/<path:url>")
+def get_episodes_with_limit(tvshowName, url):
     tvshowName = tvshowName.replace(" ", "_")
+    episodeService = EpisodeService(db, tvshowName=tvshowName, pageUrl=url)
+    start = 1
+    end = 10
 
-    episode =  episodeService.get_episodes(tvshow=tvshowName, pageUrl=url, 
-                                            startNumber=start, endNumber=end)
-    return episode
+    episodes =  episodeService.get_episodes(startNumber=start, endNumber=end)
+    return render_template('episodes.html', episodes=episodes["Episodes"][0])
+
+
+@app.route("/episodes/<string:tvshowName>/<path:url>/<int:start>/<int:end>")
+def get_episodes(tvshowName, url, start = None, end = None):
+    tvshowName = tvshowName.replace(" ", "_")
+    episodeService = EpisodeService(db, tvshowName=tvshowName, pageUrl=url)
+        
+    episodes =  episodeService.get_episodes(startNumber=start, endNumber=end)
+    return render_template('episodes.html', tvshows=episodes["Episodes"])
 
 @app.route("/devices")
 def get_devices():
     return {"Devices": ["Living Room TV", "Sofa Room TV"]}
 
-@app.route("/connect/<deviceName>")
-def conn_to_tv(deviceName="Living Room TV"):
-    global caster
+@app.route("/cast/<string:deviceName>", methods=['GET'])
+def cast(deviceName="Living Room TV"):
+    thumbnail = request.args.get("thumbnail")
+    date = request.args.get("date")
+    title = request.args.get("title")
+    contentUrl = request.args.get("contentUrl")
+
     caster.find(deviceName)
     caster.connect()
+
     name = caster.getDeviceName()
 
-    return name
+    episode = EPISODE(title=title, date=date, thumbnail=thumbnail, contentUrl=contentUrl)
+    episode.update_content_type()
 
-@app.route("/cast")
-def cast():
-    # print(cast.duration)
-    get_e()
-    conn_to()
-    time.sleep(5)
-    name = caster.getDeviceName()
-    caster.cast(cast)
+    cast_info: CAST = CAST(episode)
 
-    return name
+    caster.cast(cast_info=cast_info)
+
+    time.sleep(10)
+
+    return render_template('casting.html', casting_device=deviceName)
+
+
+@app.route("/connect/<string:deviceName>")
+def connect(deviceName="Living Room TV"):
+    caster.find(deviceName)
+    caster.connect()
+
+    return deviceName
+
+@app.route("/pause")
+def get_current_time():
+    caster.connect()
+    timestamp =  caster.get_current_time()
+    return timestamp
+
 
 @app.route("/pause")
 def pause():
-    conn_to()
+    caster.connect()
     caster.pause()
     return ""
 
 @app.route("/play")
 def play():
-    conn_to()
+    caster.connect()
     caster.play()
     return ""
 
 @app.route("/mute")
 def mute():
-    conn_to()
+    caster.connect()
     caster.mute()
     return "Done"
 
 @app.route("/unmute")
 def Unmute():
-    conn_to()
+    caster.connect()
     caster.unmute()
     return "done"
 
+@app.route("/quit")
+def quit():
+    caster.connect()
+    caster.quit()
+    return "done"
+
+
+
+@app.route("/backward")
+def backward():
+    caster.connect()
+    timestamp =  caster.get_current_time()
+    if timestamp is not None:
+        print(timestamp)
+        caster.move_to(timestamp-10)
+        pause()
+        print(timestamp)
+    return "Done"
+
+
+
 @app.route("/forward")
-def unmute():
-    conn_to()
+def forward():
     timestamp =  caster.get_current_time()
     if timestamp is not None:
         print(timestamp)

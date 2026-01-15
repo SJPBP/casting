@@ -53,10 +53,10 @@ class TVShowFetcher:
         pageUrl = self.extract_page_url()
         channel = self.extract_channel_name()
 
-        latest_episode = episodeTable.get_all(1, 0)
-        if latest_episode is None:
-            episodes = scraper.shallow_search
-            self.update_episodes()
+        # latest_episode = episodeTable.get_all(1, 0)
+        # if latest_episode is None:
+        #     episodes = scraper.shallow_search
+        #     self.update_episodes()
             
         tvShow = TVSHOW(channel=channel, name=name, 
                         thumbnail=thumbnail, totalEpisodes=totalEpisodes, 

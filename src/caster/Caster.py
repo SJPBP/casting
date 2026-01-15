@@ -8,7 +8,7 @@ from classes.CAST import CAST
 
 class Caster:
     def __init__(self):
-        pass
+        self.media_player = None
 
     def find(self, chromeCastDeviceName: str = ""):
         """
@@ -71,19 +71,28 @@ class Caster:
         self.chromecast.quit_app()
 
     def play(self):
-        self.media_player.play()
+        if self.media_player is not None:
+            self.media_player.play()
+        else:
+            print("Failed")
 
     def pause(self):
-        self.media_player.pause()
+        if self.media_player is not None:
+            self.media_player.pause()
+        else:
+            print("Failed")
 
     def mute(self):
-        self.chromecast.set_volume_muted(True)
+        if self.media_player is not None:
+            self.chromecast.set_volume_muted(True)
 
     def unmute(self):
-        self.chromecast.set_volume_muted(False)
+        if self.media_player is not None:
+            self.chromecast.set_volume_muted(False)
 
     def move_to(self, timeInSec):
-        self.media_player.seek(timeInSec)
+        if self.media_player is not None:
+            self.media_player.seek(timeInSec)
 
     def get_current_time(self) -> float | None:
         try:
@@ -142,6 +151,12 @@ class Caster:
         print(self.media_player.status)
 
     def connect(self):
+        # Already connected to TV
+        if self.media_player is not None:
+            return True
+        print("Connecting to TV")
+        # Not connected to TV
+
         cast: pychromecast.Chromecast = self.chromecast
 
         # Start worker thread and wait for cast device to be ready
@@ -151,8 +166,10 @@ class Caster:
         self.media_player = cast.media_controller
 
         self.media_player.block_until_active(2.0)
+        print("Connected")
 
     def cast(self, cast_info: CAST):
+        print("Casting to TV")
         cast: pychromecast.Chromecast = self.chromecast
                 # Start worker thread and wait for cast device to be ready
         cast.wait()
@@ -162,7 +179,8 @@ class Caster:
 
         # Media controller which casting to device
         self.media_player = cast.media_controller
-
+        
+        print(cast_info.episode)
 
         self.media_player.play_media(
                 url=cast_info.episode.contentUrl, 
@@ -174,6 +192,7 @@ class Caster:
         self.media_player.block_until_active()
 
         time.sleep(1)
+        print("Casting Now")
 
 
     
