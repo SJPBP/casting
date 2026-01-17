@@ -3,12 +3,71 @@
 
 <head>
   <title>Casting</title>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      function getTVName() {
+        device_name = document.getElementById("device_name").textContent;
+        return device_name;
+      }
+
+      function callApi(api) {
+        device_name = getTVName();
+        api = api + "?device_name=" + device_name;
+        console.log("Using api " + api);
+        fetch(api)
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      }
+
+      document.addEventListener("click", function (event) {
+        if (event.target.tagName === "BUTTON") {
+          console.log("Button clicked:", event.target.id);
+
+          const api = "http://127.0.0.1:5000/" + event.target.id;
+          callApi(api);
+        }
+      });
+
+      function play() {
+        const api = "http://127.0.0.1:5000/play";
+        console.log("Playing the content");
+        callApi(api);
+      }
+
+      function pause() {
+        const api = "http://127.0.0.1:5000/pause";
+        console.log("Pausing the content");
+        callApi(api);
+      }
+
+      function mute() {
+        const api = "http://127.0.0.1:5000/mute";
+        console.log("Muting the content");
+        callApi(api);
+      }
+
+    });
+  </script>
 </head>
 
 <body>
-  <h1>{{casting_device}}</h1>
+  <h1 id="device_name">{{casting_device}}</h1>
   <hr />
-  <h3>: {{}}</h3>
+  <div>
+    <button type="button" id="play">Play</button>
+    <button type="button" id="pause">Pause</button>
+    <button type="button" id="quit">Quit</button>
+    <button type="button" id="mute">Mute</button>
+    <button type="button" id="unmute">Unmute</button>
+    <button type="button" id="forward">Forward</button>
+    <button type="button" id="backward">Backward</button>
+  </div>
 </body>
 
 </html>

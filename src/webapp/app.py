@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect
 from tables.Database import Database
 from classes.CAST import CAST
 from classes.EPISODE import EPISODE
@@ -17,10 +17,13 @@ tVShowService = TVShowService(db)
 caster = Caster()
 # cast = None
 
+@app.route("/")
+def home():
+    return redirect("/channels")
+
 @app.route("/channels")
 def get_channels():
     channels = channelService.get_channels()
-    # print(channels)
     # return channels
     return render_template('channels.html', channels=channels["Channels"])
 
@@ -33,9 +36,7 @@ def get_channel(name):
 @app.route("/tvshows/<channelName>/<path:url>", methods=['GET'])
 def get_tvshows(channelName, url):
     channelName = channelName.replace("-", "_")
-    print(channelName, url)
     tvshows = tVShowService.get_tvshows(channel=channelName, pageUrl=url)
-    print(tvshows)
     return render_template('tvshows.html', tvshows=tvshows["TVShows"])
 
     return tvshow
@@ -43,7 +44,6 @@ def get_tvshows(channelName, url):
 @app.route("/tvshow/<channelName>/<path:url>/<string:tvshowName>", methods=['GET'])
 def get_tvshow(channelName, url, tvshowName):
     channelName = channelName.replace("-", "_")
-    print(channelName, url, tvshowName)
     tvshow = tVShowService.get_tvshow(channel=channelName, pageUrl=url, name=tvshowName)
     return tvshow
 
@@ -100,6 +100,10 @@ def cast(deviceName="Living Room TV"):
 
     return render_template('casting.html', casting_device=deviceName)
 
+@app.route("/test_cast", methods=['GET'])
+def test_cast_html():
+    return render_template('casting.html', casting_device="Living Room TV")
+
 
 @app.route("/connect/<string:deviceName>")
 def connect(deviceName="Living Room TV"):
@@ -108,66 +112,96 @@ def connect(deviceName="Living Room TV"):
 
     return deviceName
 
-@app.route("/pause")
-def get_current_time():
-    caster.connect()
-    timestamp =  caster.get_current_time()
-    return timestamp
-
 
 @app.route("/pause")
 def pause():
-    caster.connect()
+    device_name = request.args.get("device_name")
+    connect(device_name)
     caster.pause()
-    return ""
+    return "Done"
 
 @app.route("/play")
 def play():
-    caster.connect()
+    device_name = request.args.get("device_name")
+    print(device_name)
+    connect(device_name)
     caster.play()
     return ""
 
 @app.route("/mute")
 def mute():
-    caster.connect()
+    device_name = request.args.get("device_name")
+    print(device_name)
+    connect(device_name)
+
     caster.mute()
+    
     return "Done"
 
 @app.route("/unmute")
 def Unmute():
-    caster.connect()
+    device_name = request.args.get("device_name")
+    print(device_name)
+    connect(device_name)
+
     caster.unmute()
+
     return "done"
 
 @app.route("/quit")
 def quit():
-    caster.connect()
+    device_name = request.args.get("device_name")
+    print(device_name)
+    connect(device_name)
+
     caster.quit()
+
     return "done"
 
+
+@app.route("/current_time")
+def current_time():
+    device_name = request.args.get("device_name")
+    print(device_name)
+    connect(device_name)
+    timestamp =  caster.get_current_time()
+    return f"{timestamp}"
 
 
 @app.route("/backward")
 def backward():
-    caster.connect()
+    seek = request.args.get("time")
+    if seek is None:
+        seek = 10
+
+    device_name = request.args.get("device_name")
+    print(device_name)
+    connect(device_name)
+
     timestamp =  caster.get_current_time()
+
     if timestamp is not None:
-        print(timestamp)
-        caster.move_to(timestamp-10)
+        caster.move_to(timestamp - seek)
         pause()
-        print(timestamp)
+
     return "Done"
 
 
 
-@app.route("/forward")
+@app.route("/forward", methods=["GET"])
 def forward():
+    seek = request.args.get("time")
+    if seek is None:
+        seek = 10
+
+    device_name = request.args.get("device_name")
+    print(device_name)
+    connect(device_name)
+
     timestamp =  caster.get_current_time()
     if timestamp is not None:
-        print(timestamp)
-        caster.move_to(timestamp+10)
+        caster.move_to(timestamp + seek)
         pause()
-        print(timestamp)
     return "Done"
 
     
