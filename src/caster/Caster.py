@@ -155,9 +155,12 @@ class Caster:
         if self.media_player is not None:
             return True
         print("Connecting to TV")
-        # Not connected to TV
 
-        cast: pychromecast.Chromecast = self.chromecast
+        try:
+            cast: pychromecast.Chromecast = self.chromecast
+        except Exception as e:
+            print(e)
+            return False
 
         # Start worker thread and wait for cast device to be ready
         cast.wait()
