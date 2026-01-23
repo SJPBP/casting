@@ -19,11 +19,14 @@ class Database:
     def close(self):
         self.connection.close()
 
-    def execute(self, query, params=None, fetchone: bool = False, fetchall: bool = False):
+    def execute(self, query, params=None, fetchone: bool = False, fetchall: bool = False, executemany: bool = False):
         cur = self.connection.cursor(dictionary=True)
 
         try:
-            cur.execute(query, params or ())
+            if executemany:
+                cur.executemany(query, params or ())
+            else:
+                cur.execute(query, params or ())
         except mysql.connector.errors.IntegrityError as e: 
             if e.errno == 1062:
                 print("Creating Duplicate entry, skipping!")
@@ -38,6 +41,7 @@ class Database:
         self.connection.commit()
         cur.close()
         return result
+
 
    
     # def __del__(self):
