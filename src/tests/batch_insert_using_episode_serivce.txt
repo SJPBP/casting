@@ -1,0 +1,7 @@
+I will create a new table.
+
+I will get the all the data like before but 
+
+1. Test the data and not add it to database
+
+I will test on "MasterChef_India_Season_9"
