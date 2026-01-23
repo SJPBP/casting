@@ -7,7 +7,6 @@ from services.TVShowService import TVShowService
 from services.EpisodeService import EpisodeService
 from caster.Caster import Caster
 import time
-import requests
 
 app = Flask(__name__)
 
@@ -54,12 +53,14 @@ def get_episode(tvshowName, url, date):
     episode =  episodeService.get_episode(tvshow=tvshowName, pageUrl=url, date=date)
     return episode
 
-@app.route("/episodes/<string:tvshowName>/<path:url>")
-def get_episodes_with_limit(tvshowName, url):
+@app.route("/episodes/<string:tvshowName>/<path:url>/<int:page>")
+def get_episodes_with_limit(tvshowName, url, page):
+    if page <= 0:
+        page = 1
     tvshowName = tvshowName.replace(" ", "_")
     episodeService = EpisodeService(db, tvshowName=tvshowName, pageUrl=url)
-    start = 1
-    end = 10
+    end = page * 10
+    start = end - 9
 
     episodes =  episodeService.get_episodes(startNumber=start, endNumber=end)
     return render_template('episodes.html', episodes=episodes["Episodes"][0])
@@ -70,7 +71,7 @@ def get_episodes(tvshowName, url, start = None, end = None):
     tvshowName = tvshowName.replace(" ", "_")
     episodeService = EpisodeService(db, tvshowName=tvshowName, pageUrl=url)
         
-    episodes =  episodeService.get_episodes(startNumber=start, endNumber=end)
+    episodes = episodeService.get_episodes(startNumber=start, endNumber=end)
     return render_template('episodes.html', tvshows=episodes["Episodes"])
 
 @app.route("/devices")
