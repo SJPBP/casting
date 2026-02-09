@@ -1,0 +1,226 @@
+body {
+  background-color: white;
+
+  display: flex; /* elements stacked vertically (top → bottom) */
+  justify-content: center; /* moves items to the middle left-right */
+  align-items: center; /* moves items to the middle top-bottom */
+  height: 100vh;
+
+  overflow: hidden; /* removes vertical and horizontal scrolling */
+}
+
+#thumbnail {
+  background-color: white;
+  
+  height: 100vh;
+
+  height: 95%;
+  width: 95%;
+
+
+  border-radius: 20px;
+  border-style: solid;
+  border-width: 5px;
+
+}
+
+#thumbnail {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  flex-direction: column;
+  
+  position: relative;
+}
+
+#video-thumbnail {
+  inset: 0;                /* top:0 right:0 bottom:0 left:0 */
+  width: 100%;
+  height: 100%;
+
+  border-radius: 14px;
+  border-width: 5px;
+}
+
+#video-thumbnail {
+  position: absolute;
+  object-fit: cover;       /* image covers div */
+  z-index: 0;
+  cursor: pointer;
+}
+
+/* #media-options { */
+/*   height: 100vh; */
+/*   background-color: cyan; */
+/* } */
+
+#media-options {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  flex-direction: row;
+  
+  position: absolute;
+  top: 50%;
+}
+
+.round-circle {
+  border-radius: 50%;
+  border: none;
+
+  color: white;
+  background-color: #28202e;
+  transition: background-color 0.5s;
+
+  background-color: DodgerBlue;
+
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+
+  cursor: pointer; /* Hand cursor when hovering over button */
+
+  margin: 5px;
+}
+
+.round-circle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  
+}
+
+.round-circle.large {
+  font-size: 4vw;
+
+  height: 8vw;
+  width: 8vw;
+}
+
+.round-circle.medium {
+  font-size: 4vw;
+
+  height: 6vw;
+  width: 6vw;
+}
+
+.round-circle:hover {
+  background-color: RoyalBlue;
+}
+
+.fa-play {
+  padding-left: 1vw;
+}
+
+.fa-forward {
+  padding-left: 1vw;
+}
+
+.fa-backward {
+  padding-right: 1vw;
+}
+
+
+.control-panel {
+  height: 200px;
+  width: 95%;
+
+  background-color:  red;
+}
+
+.control-panel {
+  position: relative;
+  top: 35%;
+}
+
+.video-info {
+  background-color: green;
+
+  height: 12vh;
+  width: 17vw;
+}
+
+.video-info {
+  position: relative;
+  top: 3vh;
+  left: 1vw;
+}
+
+.video-title {
+  background-color: grey;
+
+  height: 6vh;
+  width: 17vw;
+}
+
+.video-title {
+  position: relative;
+}
+
+.video-type {
+  background-color: blue;
+
+  height: 5vh;
+  width: 12vw;
+}
+
+.video-type {
+  position: relative;
+  top: 1vh;
+}
+
+.progress-bar {
+  background-color: yellow;
+
+  height: 7vh;
+  width: 85.3vw;
+}
+
+.progress-bar {
+  position: relative;
+  top: 4vh;
+  left: 1vw;
+}
+
+.timestamp {
+  background-color: blue;
+
+  height: 12vh;
+  width: 17vw;
+
+}
+
+.timestamp {
+  position: absolute;
+
+  bottom: 9.5vh;
+  right: 3vw;
+  /* left: 9vw; */
+
+}
+/* #progress-bar { */
+/*   background-color: pink; */
+/*   width: 95%; */
+/*   height: 25%; */
+/* } */
+/**/
+/* #progress-bar { */
+/*   position: absolute; */
+/*   left: 2%; */
+/* } */
+/**/
+/* #timestamp { */
+/*   background-color: green; */
+/*   width: 10%; */
+/*   height: 25%; */
+/**/
+/* } */
+/**/
+/* #timestamp { */
+/*   display: inline-block;  */
+/*   right: 0; */
+/* } */
+/**/
+/**/
+
