@@ -47,13 +47,7 @@ body {
   position: absolute;
   object-fit: cover;       /* image covers div */
   z-index: 0;
-  cursor: pointer;
 }
-
-/* #media-options { */
-/*   height: 100vh; */
-/*   background-color: cyan; */
-/* } */
 
 #media-options {
   display: flex;
@@ -63,10 +57,11 @@ body {
   flex-direction: row;
   
   position: absolute;
-  top: 50%;
+  top: 40%;
 }
 
 .round-circle {
+  /* Start of my css */
   border-radius: 50%;
   border: none;
 
@@ -81,6 +76,20 @@ body {
   cursor: pointer; /* Hand cursor when hovering over button */
 
   margin: 5px;
+
+  /* End of my css */
+
+
+  /* From https://css.glass */
+  background: rgba(255, 255, 255, 0);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(15.8px);
+  -webkit-backdrop-filter: blur(15.8px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+
+  /* Make buttons round */
+  border-radius: 50%;
 }
 
 .round-circle {
@@ -126,7 +135,9 @@ body {
   height: 200px;
   width: 95%;
 
-  background-color:  red;
+  /* background-color:  red; */
+  color: white;
+
 }
 
 .control-panel {
@@ -135,92 +146,143 @@ body {
 }
 
 .video-info {
-  background-color: green;
+  /* background-color: green; */
 
   height: 12vh;
-  width: 17vw;
+  width: 35vw;
+  
+  /* From https://css.glass */
+  background: rgba(255, 255, 255, 0);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .video-info {
   position: relative;
-  top: 3vh;
+  top: 8vh;
   left: 1vw;
 }
 
 .video-title {
-  background-color: grey;
+  /* background-color: grey; */
 
   height: 6vh;
-  width: 17vw;
+  width: 37vw;
 }
 
 .video-title {
   position: relative;
+  left: 1vw;
 }
 
-.video-type {
-  background-color: blue;
 
-  height: 5vh;
-  width: 12vw;
+.video-title {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.video-title {
+  position: relative;
+  top: 2vh;
+
+}
+
+/* .video-type { */
+/*   /* background-color: grey; */ */
+/**/
+/*   height: 5vh; */
+/*   width: 12vw; */
+/* } */
+/**/
+/* .video-type { */
+/*   position: relative; */
+/*   top: 1vh; */
+/* } */
+
+.video-type {
+  font-size: 20px;
+  font-weight: 350;
 }
 
 .video-type {
   position: relative;
   top: 1vh;
+  left: 1vw;
+
 }
 
-.progress-bar {
-  background-color: yellow;
+.progress-container {
+  /* background-color: yellow; */
 
   height: 7vh;
   width: 85.3vw;
 }
 
-.progress-bar {
+.progress-container {
   position: relative;
   top: 4vh;
   left: 1vw;
 }
 
 .timestamp {
-  background-color: blue;
+  /* background-color: white; */
 
-  height: 12vh;
-  width: 17vw;
+  height: 5vh;
+  width: 15vw;
 
+  /* Set text bottom-right */
+  display: flex;
+  justify-content: center ; /* righ-left center */
+  align-items: center;     /* up-down center */
+  padding: 8px;              /* optional spacing from edges */
+
+  font-size: 30px;
+  font-weight: 350;
+
+  /* From https://css.glass */
+  background: rgba(255, 255, 255, 0);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .timestamp {
   position: absolute;
 
-  bottom: 9.5vh;
+  bottom: 4.5vh;
   right: 3vw;
-  /* left: 9vw; */
 
 }
-/* #progress-bar { */
-/*   background-color: pink; */
-/*   width: 95%; */
-/*   height: 25%; */
-/* } */
-/**/
-/* #progress-bar { */
-/*   position: absolute; */
-/*   left: 2%; */
-/* } */
-/**/
-/* #timestamp { */
-/*   background-color: green; */
-/*   width: 10%; */
-/*   height: 25%; */
-/**/
-/* } */
-/**/
-/* #timestamp { */
-/*   display: inline-block;  */
-/*   right: 0; */
-/* } */
-/**/
-/**/
+
+.playback-line {
+  height: 0.8vh;
+  width: 85.3vw;
+  background-color: #5f6063;
+  cursor: pointer; 
+  border-radius: 5px;
+}
+
+.playback-line {
+  position: relative;
+  top: 5vh;
+}
+
+.progress-bar {
+  height: 0.8vh;
+  width: 65.3vw;
+  background-color: #ffffff;
+  /* cursor: pointer; */
+  border-radius: 5px;
+  transition: width 0.1s linear;
+}
+
+.progress-bar {
+    position: relative;
+}
+
 

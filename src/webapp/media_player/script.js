@@ -13,3 +13,24 @@ button.addEventListener("click", () => {
     icon.classList.add("fa-play");
   }
 });
+
+// Update the playback line as the video plays
+// video.addEventListener("timeupdate", () => {
+//   const currentTime = video.currentTime;
+//   const duration = video.duration;
+//   const percentage = (currentTime / duration) * 100;
+//   progressBar.style.width = percentage + "%";
+// });
+//
+// // Reseting the playback line when the video ends
+// video.addEventListener("ended", () => {
+//   progressBar.style.width = "0%";
+//   showThumbnail();
+// });
+
+const playbackline = document.querySelector(".playback-line");
+playbackline.addEventListener("click", () => {
+  const timelineWidth = playbackline.clientWidth;
+  console.log(timelineWidth);
+  // video.currentTime = (e.offsetX / timelineWidth) * video.duration;
+});
