@@ -1,5 +1,3 @@
-console.log("script.js loaded");
-
 button = document.getElementById("pause-play-btn");
 icon = document.getElementById("pause-play-btn-content");
 
@@ -14,23 +12,17 @@ button.addEventListener("click", () => {
   }
 });
 
-// Update the playback line as the video plays
-// video.addEventListener("timeupdate", () => {
-//   const currentTime = video.currentTime;
-//   const duration = video.duration;
-//   const percentage = (currentTime / duration) * 100;
-//   progressBar.style.width = percentage + "%";
-// });
-//
-// // Reseting the playback line when the video ends
-// video.addEventListener("ended", () => {
-//   progressBar.style.width = "0%";
-//   showThumbnail();
-// });
+// Click to seek
+progressBar = document.getElementById("progress-bar");
+progressFilled = document.getElementById("progress-filled");
 
-const playbackline = document.querySelector(".playback-line");
-playbackline.addEventListener("click", () => {
-  const timelineWidth = playbackline.clientWidth;
-  console.log(timelineWidth);
-  // video.currentTime = (e.offsetX / timelineWidth) * video.duration;
+progressBar.addEventListener("click", async (e) => {
+  const rect = progressBar.getBoundingClientRect();
+  const clickX = e.clientX - rect.left;
+  const percent = clickX / rect.width;
+  // const newTime = percent * duration;
+
+  console.log(percent);
+  progressFilled.style.width = (percent * 100) + "%";
+  // await set_current_time(newTime);
 });

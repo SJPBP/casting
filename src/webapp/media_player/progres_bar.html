@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cast Video Progress Bar</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 40px;
+      background: #111;
+      color: white;
+    }
+
+    #progress-container {
+      width: 600px;
+      height: 28px;
+      background: #444;
+      cursor: pointer;
+      position: relative;
+      border-radius: 4px;
+    }
+
+    #progress-filled {
+      height: 100%;
+      width: 0%;
+      background: red;
+      border-radius: 4px;
+    }
+
+    #time {
+      margin-top: 19px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+<h2>📺 Cast Video Progress Bar</h2>
+
+<div id="progress-container">
+  <div id="progress-filled"></div>
+</div>
+
+<div id="time">
+  <span id="current">0:00</span> / <span id="total">0:00</span>
+</div>
+
+<script>
+  /***********************
+   * MOCK TV PLAYER API *
+   ***********************/
+  let mockDuration = 300; // 5 minutes
+  let mockCurrentTime = 0;
+
+  function get_duration() {
+    return Promise.resolve(mockDuration);
+  }
+
+  function get_current_time() {
+    return Promise.resolve(mockCurrentTime);
+  }
+
+  function set_current_time(time) {
+    mockCurrentTime = Math.max(0, Math.min(time, mockDuration));
+    return Promise.resolve();
+  }
+
+  // Simulate TV playback
+  setInterval(() => {
+    if (mockCurrentTime < mockDuration) {
+      mockCurrentTime += 1;
+    }
+  }, 1000);
+
+  /***********************
+   * UI LOGIC *
+   ***********************/
+  const progressContainer = document.getElementById("progress-container");
+  const progressFilled = document.getElementById("progress-filled");
+  const currentEl = document.getElementById("current");
+  const totalEl = document.getElementById("total");
+
+  let duration = 0;
+
+  async function init() {
+    duration = await get_duration();
+    totalEl.textContent = formatTime(duration);
+  }
+
+  // Update UI every second
+  setInterval(async () => {
+    if (!duration) return;
+
+    const current = await get_current_time();
+    const percent = (current / duration) * 100;
+
+    progressFilled.style.width = percent + "%";
+    currentEl.textContent = formatTime(current);
+  }, 1000);
+
+  // Click to seek
+  progressContainer.addEventListener("click", async (e) => {
+    const rect = progressContainer.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const percent = clickX / rect.width;
+    const newTime = percent * duration;
+
+    await set_current_time(newTime);
+  });
+
+  function formatTime(seconds) {
+    seconds = Math.floor(seconds);
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m}:${s.toString().padStart(2, "0")}`;
+  }
+
+  init();
+</script>
+
+</body>
+</html>
