@@ -1,0 +1,53 @@
+services:
+
+  server:
+    build: .
+    # restart: always
+    ports:
+      - '5000:5000'
+    expose:
+      - '5000'
+    environment:
+      remote_mysql_username: remote
+      remote_mysql_password: 171995
+      # remote_mysql_ip_address: 127.0.0.1
+      remote_mysql_ip_address: db 
+      remote_mysql_port: 3306
+      remote_mysql_db_name: ApneTV
+
+    networks:
+      - db_network
+    depends_on:
+      db:
+        condition: service_healthy
+      
+  db:
+    image: mysql
+    restart: always
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+    volumes:
+      - db:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: changeishappening
+      MYSQL_USER: remote
+      MYSQL_PASSWORD: 171995
+      MYSQL_DATABASE: ApneTV
+    # (this is just an example, not intended to be a production configuration)
+    networks:
+      - db_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      retries: 10
+
+
+  
+networks:
+  db_network:
+    driver: bridge
+
+volumes:
+  db:

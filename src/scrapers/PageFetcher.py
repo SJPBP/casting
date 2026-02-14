@@ -1,26 +1,26 @@
+import requests
 from bs4 import BeautifulSoup
 from lxml import etree
-import requests
+
 
 class PageFetcher:
     def __init__(self) -> None:
         self.headers = {
             "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36"
         }
-        
-        self.proxies={
-        "http": "http://nysekoqg-US-rotate:4ig88f7owcpk@p.webshare.io:80/",
-        "https": "http://nysekoqg-US-rotate:4ig88f7owcpk@p.webshare.io:80/"
-        }
-        self.proxies = {
-            "http": "http://wdgwqags:e0wk07u371r1@142.111.48.253:7030/",
-            "https": "http://wdgwqags:e0wk07u371r1@142.111.48.253:7030/"
-        }
 
+        self.proxies = {
+            "http": "http://nysekoqg-US-rotate:4ig88f7owcpk@p.webshare.io:80/",
+            "https": "http://nysekoqg-US-rotate:4ig88f7owcpk@p.webshare.io:80/",
+        }
+        # self.proxies = {
+        #     "http": "http://wdgwqags:e0wk07u371r1@142.111.48.253:7030/",
+        #     "https": "http://wdgwqags:e0wk07u371r1@142.111.48.253:7030/",
+        # }
 
     def get_soup(self, pageUrl: str | None = None, filePath: str | None = None):
         """
-        Use filePath or pageUrl 
+        Use filePath or pageUrl
         Return soup of page
         """
         if filePath is not None:
@@ -31,12 +31,19 @@ class PageFetcher:
             raise Exception("Please provide either File Path or Page URL")
 
     def get_soup_from_url(self, pageUrl):
-        
+
         try:
-            response = requests.get(pageUrl, headers=self.headers, proxies=self.proxies)
-        except requests.exceptions.ConnectionError:
-            print("Couldn't connect to Internet")
-            return ""
+            response = requests.get(
+                pageUrl, headers=self.headers, proxies=self.proxies, timeout=10
+            )
+            response.raise_for_status()
+        except requests.RequestException as e:
+            print("Request failed:", e, flush=True)
+            return None
+
+        # except requests.exceptions.ConnectionError:
+        #     print("Couldn't connect to Internet")
+        #     return ""
 
         if response.status_code != 200:
             print(response.status_code)

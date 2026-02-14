@@ -1,12 +1,14 @@
-from flask import Flask, render_template, request, redirect
-from tables.Database import Database
+import time
+
+from flask import Flask, redirect, render_template, request
+
+from caster.Caster import Caster
 from classes.CAST import CAST
 from classes.EPISODE import EPISODE
 from services.ChannelService import ChannelService
-from services.TVShowService import TVShowService
 from services.EpisodeService import EpisodeService
-from caster.Caster import Caster
-import time
+from services.TVShowService import TVShowService
+from tables.Database import Database
 
 app = Flask(__name__)
 
@@ -16,15 +18,17 @@ tVShowService = TVShowService(db)
 caster = Caster()
 # cast = None
 
+
 @app.route("/")
 def home():
     return redirect("/channels")
+
 
 @app.route("/channels")
 def get_channels():
     channels = channelService.get_channels()
     # return channels
-    return render_template('channels.html', channels=channels["Channels"])
+    return render_template("channels.html", channels=channels["Channels"])
 
 
 @app.route("/channel/<name>")
@@ -32,26 +36,30 @@ def get_channel(name):
     channel = channelService.get_channel(name)
     return channel
 
-@app.route("/tvshows/<channelName>/<path:url>", methods=['GET'])
+
+@app.route("/tvshows/<channelName>/<path:url>", methods=["GET"])
 def get_tvshows(channelName, url):
     channelName = channelName.replace("-", "_")
     tvshows = tVShowService.get_tvshows(channel=channelName, pageUrl=url)
-    return render_template('tvshows.html', tvshows=tvshows["TVShows"])
+    return render_template("tvshows.html", tvshows=tvshows["TVShows"])
 
     return tvshow
 
-@app.route("/tvshow/<channelName>/<path:url>/<string:tvshowName>", methods=['GET'])
+
+@app.route("/tvshow/<channelName>/<path:url>/<string:tvshowName>", methods=["GET"])
 def get_tvshow(channelName, url, tvshowName):
     channelName = channelName.replace("-", "_")
     tvshow = tVShowService.get_tvshow(channel=channelName, pageUrl=url, name=tvshowName)
     return tvshow
 
+
 @app.route("/episode/<tvshowName>/<path:url>/<string:date>")
 def get_episode(tvshowName, url, date):
     tvshowName = tvshowName.replace(" ", "_")
 
-    episode =  episodeService.get_episode(tvshow=tvshowName, pageUrl=url, date=date)
+    episode = episodeService.get_episode(tvshow=tvshowName, pageUrl=url, date=date)
     return episode
+
 
 @app.route("/episodes/<string:tvshowName>/<path:url>/<int:page>")
 def get_episodes_with_limit(tvshowName, url, page):
@@ -62,23 +70,25 @@ def get_episodes_with_limit(tvshowName, url, page):
     end = page * 10
     start = end - 9
 
-    episodes =  episodeService.get_episodes(startNumber=start, endNumber=end)
-    return render_template('episodes.html', episodes=episodes["Episodes"][0])
+    episodes = episodeService.get_episodes(startNumber=start, endNumber=end)
+    return render_template("episodes.html", episodes=episodes["Episodes"][0])
 
 
 @app.route("/episodes/<string:tvshowName>/<path:url>/<int:start>/<int:end>")
-def get_episodes(tvshowName, url, start = None, end = None):
+def get_episodes(tvshowName, url, start=None, end=None):
     tvshowName = tvshowName.replace(" ", "_")
     episodeService = EpisodeService(db, tvshowName=tvshowName, pageUrl=url)
-        
+
     episodes = episodeService.get_episodes(startNumber=start, endNumber=end)
-    return render_template('episodes.html', tvshows=episodes["Episodes"])
+    return render_template("episodes.html", tvshows=episodes["Episodes"])
+
 
 @app.route("/devices")
 def get_devices():
     return {"Devices": ["Living Room TV", "Sofa Room TV"]}
 
-@app.route("/cast/<string:deviceName>", methods=['GET'])
+
+@app.route("/cast/<string:deviceName>", methods=["GET"])
 def cast(deviceName="Living Room TV"):
     thumbnail = request.args.get("thumbnail")
     date = request.args.get("date")
@@ -90,7 +100,9 @@ def cast(deviceName="Living Room TV"):
 
     name = caster.getDeviceName()
 
-    episode = EPISODE(title=title, date=date, thumbnail=thumbnail, contentUrl=contentUrl)
+    episode = EPISODE(
+        title=title, date=date, thumbnail=thumbnail, contentUrl=contentUrl
+    )
     episode.update_content_type()
 
     cast_info: CAST = CAST(episode)
@@ -99,11 +111,12 @@ def cast(deviceName="Living Room TV"):
 
     time.sleep(10)
 
-    return render_template('casting.html', casting_device=deviceName)
+    return render_template("casting.html", casting_device=deviceName)
 
-@app.route("/test_cast", methods=['GET'])
+
+@app.route("/test_cast", methods=["GET"])
 def test_cast_html():
-    return render_template('casting.html', casting_device="Living Room TV")
+    return render_template("casting.html", casting_device="Living Room TV")
 
 
 @app.route("/connect/<string:deviceName>")
@@ -121,6 +134,7 @@ def pause():
     caster.pause()
     return "Done"
 
+
 @app.route("/play")
 def play():
     device_name = request.args.get("device_name")
@@ -129,6 +143,7 @@ def play():
     caster.play()
     return ""
 
+
 @app.route("/mute")
 def mute():
     device_name = request.args.get("device_name")
@@ -136,8 +151,9 @@ def mute():
     connect(device_name)
 
     caster.mute()
-    
+
     return "Done"
+
 
 @app.route("/unmute")
 def Unmute():
@@ -148,6 +164,7 @@ def Unmute():
     caster.unmute()
 
     return "done"
+
 
 @app.route("/quit")
 def quit():
@@ -165,7 +182,7 @@ def current_time():
     device_name = request.args.get("device_name")
     print(device_name)
     connect(device_name)
-    timestamp =  caster.get_current_time()
+    timestamp = caster.get_current_time()
     return f"{timestamp}"
 
 
@@ -179,14 +196,13 @@ def backward():
     print(device_name)
     connect(device_name)
 
-    timestamp =  caster.get_current_time()
+    timestamp = caster.get_current_time()
 
     if timestamp is not None:
         caster.move_to(timestamp - seek)
         pause()
 
     return "Done"
-
 
 
 @app.route("/forward", methods=["GET"])
@@ -199,17 +215,17 @@ def forward():
     print(device_name)
     connect(device_name)
 
-    timestamp =  caster.get_current_time()
+    timestamp = caster.get_current_time()
     if timestamp is not None:
         caster.move_to(timestamp + seek)
         pause()
     return "Done"
 
-    
 
 # main driver function
-if __name__ == '__main__':
+if __name__ == "__main__":
 
-    # run() method of Flask class runs the application 
+    # run() method of Flask class runs the application
     # on the local development server.
-    app.run(debug=True)
+    # app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)
