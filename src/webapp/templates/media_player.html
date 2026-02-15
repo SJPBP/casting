@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" /
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ device }}</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <script src="script.js" defer></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/media_player.css') }}">
+    <script src="{{ url_for('static', filename='scripts/media_player.js') }}"></script>
+  </head>
+
+  <body>
+    <div id="thumbnail">
+      <img id="video-thumbnail" src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi.pinimg.com%2Foriginals%2Fa0%2F2b%2F0c%2Fa02b0ccff41c0d3ebd05bfb13b704569.png&f=1&nofb=1&ipt=a471f921071fca0cfd027b207ef137a60f5d5c9039958ab4821348a5279eac94" alt="MasterChef India Season 9 - 6th February 2026 Thumbnail">
+      <div id="media-options">
+        <button id="backward-btn" class="round-circle medium">
+        <i class="fa fa-backward"></i>
+        </button>
+      
+        <button id="pause-play-btn" class="round-circle large">
+          <i id="pause-play-btn-content" class="play-icon fa fa-play"></i>
+        </button>
+      
+        <button id="forward-btn" class="round-circle medium">
+        <i class="fa fa-forward"></i>
+        </button>
+
+      </div>
+
+      <div class="control-panel">
+        <div id="content">
+          <div class="video-info">
+            <div class="video-title">
+              MasterChef India Season 9 - 6th February 2026
+            </div>
+            <div class="video-type">
+              TV Show
+            </div>
+          </div>
+        
+          <div class="timestamp">
+            <div>
+                  <span id="current-time">00:00</span>
+                  <span id="separator">/</span>
+                  <span id="total-duration">00:00</span>
+              </div>
+          </div>
+        </div>
+        <div class="progress-container">
+            <div id="progress-bar">
+            <div id="progress-filled"></div>
+          </div>
+        </div>
+
+        
+      </div>
+    </div>
+  </body>
+</html>

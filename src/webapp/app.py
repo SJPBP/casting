@@ -111,7 +111,7 @@ def cast(deviceName="Living Room TV"):
 
     time.sleep(10)
 
-    return render_template("casting.html", casting_device=deviceName)
+    return render_template("media_player.html", device=deviceName)
 
 
 @app.route("/test_cast", methods=["GET"])

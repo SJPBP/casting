@@ -1,0 +1,462 @@
+/* Default = Phone styles */
+body {
+    background-color: white;
+
+    display: flex; /* elements stacked vertically (top → bottom) */
+    justify-content: center; /* moves items to the middle left-right */
+    align-items: center; /* moves items to the middle top-bottom */
+    height: 100vh;
+
+    overflow: hidden; /* removes vertical and horizontal scrolling */
+    font-size: 100%;
+  }
+
+  #thumbnail {
+    background-color: white;
+    
+    height: 100vh;
+
+    height: 97%;
+    width: 99%;
+
+
+    border-radius: 20px;
+    border-style: solid;
+    border-width: 5px;
+    
+    /* From https://css.glass */
+    background: rgba(255, 255, 255, 0);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(15.8px);
+    -webkit-backdrop-filter: blur(15.8px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+
+    /* Make buttons round */
+    border-radius: 50%;
+  }
+
+  #thumbnail {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    flex-direction: column;
+    
+    position: relative;
+  }
+
+  #video-thumbnail {
+    inset: 0;                /* top:0 right:0 bottom:0 left:0 */
+    width: 100%;
+    height: 100%;
+
+    border-radius: 14px;
+    border-width: 5px;
+  }
+
+  #video-thumbnail {
+    position: absolute;
+    object-fit: cover;       /* image covers div */
+    z-index: 0;
+  }
+
+  #media-options {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    flex-direction: row;
+    
+    position: absolute;
+    top: 40%;
+  }
+
+  .round-circle {
+    /* Start of my css */
+
+    border-radius: 50%;
+    border: none;
+
+    color: white;
+    background-color: #28202e;
+    transition: background-color 0.5s;
+
+    background-color: DodgerBlue;
+
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+
+    cursor: pointer; /* Hand cursor when hovering over button */
+
+    margin: 5px;
+
+    /* End of my css */
+
+
+    /* From https://css.glass */
+    background: rgba(255, 255, 255, 0);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(15.8px);
+    -webkit-backdrop-filter: blur(15.8px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+
+    /* Make buttons round */
+    border-radius: 50%;
+  }
+
+  .round-circle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    
+  }
+
+  .round-circle.large {
+    font-size: 4vw;
+
+    height: 20vw;
+    width: 20vw;
+  }
+
+  .round-circle.medium {
+    font-size: 4vw;
+
+    height: 16vw;
+    width: 16vw;
+  }
+
+  .round-circle:hover {
+    background-color: RoyalBlue;
+  }
+
+  .fa-play {
+    padding-left: 1vw;
+  }
+
+  .fa-forward {
+    padding-left: 1vw;
+  }
+
+  .fa-backward {
+    padding-right: 1vw;
+  }
+
+
+  .control-panel {
+    height: 158px;
+    width: 95%;
+
+    /* background-color:  red; */
+    color: white;
+
+  }
+
+  .control-panel {
+    /* background-color: red; */
+    position: relative;
+    top: 35%;
+  }
+
+
+  #content {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    bottom: 0px;
+  }
+
+  .video-info {
+    background-color: green;
+
+    width: 59%;
+    padding: 10px;
+    padding-right: 11px;
+    padding-left: 0px;
+    
+    /* From https://css.glass */
+    background: rgba(255, 255, 255, 0);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .video-info {
+    display: flex;
+    display: inline;
+    flex-direction: column;
+  }
+
+
+  .video-title {
+    /* background-color: grey; */
+
+    max-height: 90%;
+    max-width: 99%;
+
+    /* font-size: 1.5vw; */
+    font-size: 0.8rem;
+    font-weight: bold;
+  }
+
+
+  .video-title {
+    position: relative;
+    left: 1vw;
+    align-self: flex-start;
+
+  }
+
+
+  .video-type {
+    font-size: 0.8rem;
+    font-weight: 350;
+  }
+
+  .video-type {
+    position: relative;
+    /* top: 1vh; */
+    left: 1vw;
+    align-self: flex-start;
+    justify-content: flex-end;
+    
+  }
+
+
+
+  .timestamp {
+    /* background-color: white; */
+
+    /* height: 5vh; */
+    /* width: 55vw; */
+    /* width: clamp(10px, 15vw, 900px); */
+    
+
+
+    /* max-width: 15vw; */
+    /* min-width: 15vw; */
+
+    /* Set text bottom-right */
+    display: flex;
+    justify-content: center ; /* righ-left center */
+    align-items: center;     /* up-down center */
+    padding: 8px;              /* optional spacing from edges */
+
+    font-size: 30px;
+    font-size: clamp(13px, 4vw, 30px);
+    font-weight: 350;
+
+    /* From https://css.glass */
+    background: rgba(255, 255, 255, 0);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .timestamp {
+    /* position: relative; */
+    /* bottom: 6.1vh; */
+    
+    /* left: clamp(66px, 70vw, 66vw); */
+    /* left: 70.2vw; */
+    /* justify-self: center; */
+    align-self: flex-end;
+  }
+
+  .progress-container {
+    /* background-color: yellow; */
+
+    height: 7vh;
+    /* width: 85.3vw; */
+    width: 100%;
+  }
+
+  .progress-container {
+    position: relative;
+    top: 0vh;
+    /* left: 1vw; */
+    bottom: 0vh;
+  }
+
+  #progress-bar {
+    height: 1vh;
+    /* height: 8px; */
+    /* width: 85.3vw; */
+    width: 100%;
+    background-color: #5f6063;
+    cursor: pointer; 
+    border-radius: 5px;
+  }
+
+  #progress-bar {
+    position: relative;
+    /* top: 5vh; */
+    top: 15px;
+  }
+
+  #progress-filled {
+    height: 1vh;
+    /* width: 65.3vw; */
+    width: 0%;
+
+    background-color: #ffffff;
+    /* cursor: pointer; */
+    border-radius: 5px;
+    transition: width 0.1s linear;
+  }
+
+  #progress-filled {
+      position: relative;
+  }
+
+
+
+/* Tablet and up */
+@media (min-width: 600px) {
+  body {
+    font-size: 16px;
+  }
+  .round-circle.large {
+    font-size: 4vw;
+
+    height: 15vw;
+    width: 15vw;
+  }
+
+  .round-circle.medium {
+    font-size: 4vw;
+
+    height: 10vw;
+    width: 10vw;
+  }
+
+
+  .video-title {
+    /* background-color: grey; */
+
+    max-height: 80%;
+    max-width: 95%;
+
+    font-size: 2.2vw;
+    /* font-size: .7rem; */
+    font-weight: bold;
+  }
+
+
+  .video-title {
+    position: relative;
+    left: 1vw;
+    align-self: flex-start;
+
+  }
+
+
+  .video-type {
+    font-size: 1.2rem;
+    font-weight: 350;
+  }
+
+  .video-type {
+    position: relative;
+    /* top: 1vh; */
+    left: 1vw;
+    align-self: flex-start;
+    justify-content: flex-end;
+    
+  }
+}
+
+/* Desktop and up */
+@media (min-width: 1024px) {
+
+  .round-circle.large {
+    font-size: 4vw;
+
+    height: 8vw;
+    width: 8vw;
+  }
+
+  .round-circle.medium {
+    font-size: 4vw;
+
+    height: 6vw;
+    width: 6vw;
+  }
+ 
+  #content {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    bottom: 0px;
+  }
+
+  .video-info {
+    background-color: green;
+
+    width: 39%;
+    padding: 10px;
+    padding-right: 11px;
+    padding-left: 0px;
+    
+    /* From https://css.glass */
+    background: rgba(255, 255, 255, 0);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .video-info {
+    display: flex;
+    display: inline;
+    flex-direction: column;
+  }
+
+
+  .video-title {
+    /* background-color: grey; */
+
+    max-height: 80%;
+    max-width: 95%;
+
+    font-size: 1.5vw;
+    /* font-size: .7rem; */
+    font-weight: bold;
+  }
+
+
+  .video-title {
+    position: relative;
+    left: 1vw;
+    align-self: flex-start;
+
+  }
+
+
+  .video-type {
+    font-size: 1rem;
+    font-weight: 350;
+  }
+
+  .video-type {
+    position: relative;
+    /* top: 1vh; */
+    left: 1vw;
+    align-self: flex-start;
+    justify-content: flex-end;
+    
+  }
+
+}
+
+
+
+

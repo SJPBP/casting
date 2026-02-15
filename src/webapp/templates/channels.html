@@ -3,17 +3,25 @@
 
 <head>
   <title>Channels</title>
+    <!-- <link rel="stylesheet" href="{{ url_for('static', filename='home/style.css') }}"> -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/channels.css') }}">
+    <script src="{{ url_for('static', filename='home/script.js') }}"></script>
 </head>
 
 <body>
   <h1>Channels</h1>
-  <hr />
+  <!-- <hr /> -->
+    <div class="channels">
+
   {% for channel in channels %}
-  <a href="http://127.0.0.1:5000/tvshows/{{channel.name}}/{{channel.pageUrl}}">{{channel.id}}. {{channel.name}}</a>
+  <a href="http://127.0.0.1:5000/tvshows/{{channel.name}}/{{channel.pageUrl}}">{{channel.id}}. {{channel.name}}
   <br>
   <img src="{{channel.logoUrl}}" alt="{{channel.name}} height="100" width="100">
   <br>
+  </a>
   {% endfor %}
+        </div>
+
 </body>
 
 </html>
