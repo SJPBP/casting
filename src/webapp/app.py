@@ -3,6 +3,7 @@ import time
 from flask import Flask, redirect, render_template, request
 
 from caster.Caster import Caster
+from caster.Player import Player
 from classes.CAST import CAST
 from classes.EPISODE import EPISODE
 from services.ChannelService import ChannelService
@@ -17,6 +18,28 @@ channelService = ChannelService(db)
 tVShowService = TVShowService(db)
 caster = Caster()
 # cast = None
+
+devices = {}
+
+# obj created by getting chromecast device
+# It will have self.cast = pychromecast.get_chromecasts()[0]
+
+# To check if media is playing on TV
+# I have a background method which will change self.is_media_playing
+
+# if self.media.is_playing
+# yes
+# I will get self.media.title
+# And check if it my media I want to play
+
+# Yes, do nothing more
+# No, cast my media
+# No
+# Cast my media
+# Both no is casting so I should do something about this
+
+
+# Then I will put device_1 into devices dict
 
 
 @app.route("/")
@@ -93,6 +116,18 @@ def get_devices():
     return {"Devices": ["Living Room TV", "Sofa Room TV"]}
 
 
+def connect_chromecast(deviceName):
+    if deviceName in devices:
+        print("Already connected to device")
+        player = devices[deviceName]
+    else:
+        print("Creating connection to device")
+        player = Player(deviceName)
+        devices[deviceName] = player
+
+    return player
+
+
 @app.route("/cast/<string:deviceName>", methods=["GET"])
 def cast(deviceName="Living Room TV"):
     thumbnail = request.args.get("thumbnail")
@@ -100,23 +135,39 @@ def cast(deviceName="Living Room TV"):
     title = request.args.get("title")
     contentUrl = request.args.get("contentUrl")
 
-    caster.find(deviceName)
-    caster.connect()
-
-    name = caster.getDeviceName()
-
+    player = connect_chromecast(deviceName)
     episode = EPISODE(
         title=title, date=date, thumbnail=thumbnail, contentUrl=contentUrl
     )
+
     episode.update_content_type()
 
     cast_info: CAST = CAST(episode)
 
-    caster.cast(cast_info=cast_info)
+    print("CASTING TO TV")
+    player.cast(cast_info)
+    return "Done"
 
-    time.sleep(10)
 
-    return render_template("media_player.html", device=deviceName)
+# @app.route("/cast/<string:deviceName>", methods=["GET"])
+# def to_be_deleted_cast(deviceName="Living Room TV"):
+#     thumbnail = request.args.get("thumbnail")
+#     date = request.args.get("date")
+#     title = request.args.get("title")
+#     contentUrl = request.args.get("contentUrl")
+#
+#     caster.find(deviceName)
+#     caster.connect()
+#
+#     name = caster.getDeviceName()
+#
+
+#
+#     caster.cast(cast_info=cast_info)
+#
+#     time.sleep(10)
+#
+#     return render_template("media_player.html", device=deviceName)
 
 
 @app.route("/test_cast", methods=["GET"])
@@ -135,27 +186,33 @@ def connect(deviceName="Living Room TV"):
 @app.route("/pause")
 def pause():
     device_name = request.args.get("device_name")
-    connect(device_name)
-    caster.pause()
-    return "Done"
+    player = connect_chromecast(device_name)
+    # connect(device_name)
+    # caster.pause()
+    player.pause()
+    return "Pause"
 
 
 @app.route("/play")
 def play():
     device_name = request.args.get("device_name")
-    print(device_name)
-    connect(device_name)
-    caster.play()
-    return ""
+    player = connect_chromecast(device_name)
+    player.play()
+    # print(device_name)
+    # connect(device_name)
+    # caster.play()
+    return "Playing"
 
 
 @app.route("/mute")
 def mute():
     device_name = request.args.get("device_name")
-    print(device_name)
-    connect(device_name)
+    # print(device_name)
+    # connect(device_name)
+    player = connect_chromecast(device_name)
+    player.mute()
 
-    caster.mute()
+    # caster.mute()
 
     return "Done"
 
@@ -163,21 +220,23 @@ def mute():
 @app.route("/unmute")
 def Unmute():
     device_name = request.args.get("device_name")
-    print(device_name)
-    connect(device_name)
+    # print(device_name)
+    # connect(device_name)
 
-    caster.unmute()
-
+    # caster.unmute()
+    player = connect_chromecast(device_name)
+    player.unmute()
     return "done"
 
 
 @app.route("/quit")
 def quit():
     device_name = request.args.get("device_name")
-    print(device_name)
-    connect(device_name)
-
-    caster.quit()
+    # print(device_name)
+    # connect(device_name)
+    #
+    player = connect_chromecast(device_name)
+    player.caster.quit()
 
     return "done"
 
@@ -185,64 +244,61 @@ def quit():
 @app.route("/get_current_time")
 def get_current_time():
     device_name = request.args.get("device_name")
-    print(device_name)
-    connect(device_name)
-    timestamp = caster.get_current_time()
-    return f"{timestamp}"
+    player = connect_chromecast(device_name)
+    timestamp = player.get_current_time()
+    # print(device_name)
+    # connect(device_name)
+    if timestamp is not None:
+        return f"{timestamp}"
+    else:
+        return "Not playing any media!"
 
 
 @app.route("/set_current_time")
 def set_current_time():
-    seek = request.args.get("timestamp")
-    if seek is None:
-        seek = 10
-
     device_name = request.args.get("device_name")
-    print(device_name)
-    connect(device_name)
+    seek = float(request.args.get("timestamp"))
 
-    timestamp = caster.get_current_time()
+    player = connect_chromecast(device_name)
+    if seek is None:
+        player.set_current_time(442.012336)
+    else:
+        player.set_current_time(seek)
 
-    if timestamp is not None:
-        caster.move_to(timestamp - seek)
-        pause()
+    # device_name = request.args.get("device_name")
+    # print(device_name)
+    # connect(device_name)
+    #
+    # timestamp = caster.get_current_time()
+    #
+    # if timestamp is not None:
+    #     caster.move_to(timestamp - seek)
+    #     pause()
 
     return "Done"
 
 
 @app.route("/backward")
 def backward():
-    seek = request.args.get("amount")
-    if seek is None:
-        seek = 10
-
     device_name = request.args.get("device_name")
-    print(device_name)
-    connect(device_name)
+    seek = request.args.get("timestamp")
 
-    timestamp = caster.get_current_time()
-
-    if timestamp is not None:
-        caster.move_to(timestamp - seek)
-        pause()
+    player = connect_chromecast(device_name)
+    timestamp = player.get_current_time()
+    player.backward_media_by(timestamp)
 
     return "Done"
 
 
 @app.route("/forward", methods=["GET"])
 def forward():
-    seek = request.args.get("amount")
-    if seek is None:
-        seek = 10
-
     device_name = request.args.get("device_name")
-    print(device_name)
-    connect(device_name)
+    seek = request.args.get("amount")
 
-    timestamp = caster.get_current_time()
-    if timestamp is not None:
-        caster.move_to(timestamp + seek)
-        pause()
+    player = connect_chromecast(device_name)
+    timestamp = player.get_current_time()
+    player.forward_media_by(timestamp)
+
     return "Done"
 
 
