@@ -1,7 +1,8 @@
+from classes.CHANNEL import CHANNEL
 from scrapers.ChannelScraper import ChannelScraper
 from tables.ChannelTable import ChannelTable
-from classes.CHANNEL import CHANNEL
 from tables.Database import Database
+
 
 class ChannelService:
     def __init__(self, db: Database):
@@ -31,7 +32,6 @@ class ChannelService:
 
         response = {}
         response["Channels"] = []
-        response["Raw"] = []
 
         # Obtain data of channels stored in database
         channels = self.table.get_all()
@@ -54,30 +54,26 @@ class ChannelService:
         Obtain data of channel choosen on ApneTV
 
         Parameters:
-        Name (str): Name of channel on ApneTV 
+        Name (str): Name of channel on ApneTV
 
         Return:
         json: Data of channel
         """
         response = {}
         response["Channels"] = []
-        response["Raw"] = []
 
         # Obtain data of channel stored in database
         channel = self.table.get_by_name(name)
+        channel = None
 
         # There is no data on channel in db
         if channel is None:
             # Obtain the data from the website
             scraper = ChannelScraper(self.pageUrl)
             channel = scraper.get_channel(name)
-            self.table.insert(channel["Channels"][0])
+            self.table.insert(channel[0])
 
         # Put the data of channel in json
         response["Channels"].append(channel)
 
         return response
-
-
-
-

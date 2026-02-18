@@ -1,7 +1,9 @@
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
 from classes.EPISODE import EPISODE
-from scrapers import EpisodeFetcher
 from scrapers.EpisodeFetcher import EpisodeFetcher
 from scrapers.EpisodeScraper import EpisodeScraper
+from services.TimerService import TimerService
 from tables.Database import Database
 from tables.EpisodeTable import EpisodeTable
 
@@ -19,28 +21,34 @@ class EpisodeService:
         self.db = db
         self.tvshowName = tvshowName
         self.pageUrl = pageUrl
+
+        # get all episodes date and urls and save them in db
         self.shallow_search()
 
+        self.timer = TimerService()
+
     def shallow_search(self):
+        print(f"RUNNING SHALLOW SEARCH ON {self.tvshowName}")
         episodeTable = EpisodeTable(self.db, tvshowName=self.tvshowName)
 
         episodeScraper = EpisodeScraper(pageUrl=self.pageUrl)
 
-        latest_episode_date: list[EPISODE] = episodeTable.latest_episode()
+        latest_episode_date: list[EPISODE] | None = episodeTable.latest_episode()
 
         # Table is filled, but behind then start adding until top episode from table
-        if latest_episode_date is not None:
+        if latest_episode_date is None:
+            # Find all the episodes
+            episodes: list[EPISODE] = episodeScraper.shallow_search()
+
+        else:
             latest_episode_date = latest_episode_date[
                 0
             ].convert_date_from_mysql_to_apnetv_format()
 
-            print("Latest_Episode", latest_episode_date)
             episodes: list[EPISODE] = episodeScraper.shallow_search(latest_episode_date)
 
-        else:
-            # Find all the episodes
-            episodes: list[EPISODE] = episodeScraper.shallow_search()
-        if episodes:
+        if len(episodes) != 0:
+            print("RESUTL FROM SHALLOW SEARCH")
             # Add if there is something inside the list
             episodeTable.batch_insert_all(episodes)
 
@@ -55,37 +63,57 @@ class EpisodeService:
         endNumber (int): The ending episode number (inclusive). Defaults to 8.
         oldShow (bool): Indicates whether the TV show has concluded; this value is always `False`.
         """
+        print(f"GETTING EPISODES FOR TVSHOW: {self.tvshowName}")
         # Connect to db and use table named after tvshow
         episodeTable = EpisodeTable(self.db, tvshowName=self.tvshowName)
 
         response = {}
         response["Episodes"] = []
 
+        print("GETTING DATA FROM DB")
         # Obtain Episode data from the database.
-        episodes = episodeTable.get_all(startNumber=startNumber, endNumber=endNumber)
+        episodes: list[EPISODE] = episodeTable.get_all(
+            startNumber=startNumber, endNumber=endNumber
+        )
 
-        if episodes is not None:
-            # Get the episode data for the one that don't have all the data
-            for index, episode in enumerate(episodes):
-                if episode.contentUrl is None:
-                    print("Finding ")
-                    scraper = EpisodeFetcher(episode.pageUrl)
+        # Prevent putting episodes with completed data
+        missing_episode: bool = False
 
-                    result = scraper.get_episode()
+        with ThreadPoolExecutor(max_workers=10) as executor:
+            futures = []
 
-                    episodeTable.update(result)
-
-                    episodes[index] = result
-
+            # Loop through all episode, check if even one episode is missing data then get it
+            for idx, episode in enumerate(episodes):
                 episode.date = episode.convert_date_from_mysql_to_apnetv_format()
+                if episode.contentUrl is None:
+                    print(f"MISSING DATA FOR EPISODE WITH DATE: {episode.date}")
+                    job = executor.submit(self.process_episode, episode, idx)
+                    futures.append(job)
 
-            if episodes:
-                # Add if there is something inside the list
-                episodeTable.batch_insert_all(episodes)
+                    missing_episode = True
+                else:
+                    episodes[idx] = episode
+            for future in as_completed(futures):
+                updated_episode, idx = future.result()
+                episodes[idx] = updated_episode
 
-            response["Episodes"].append(episodes)
+        # I have some episode(s) that are missing data
+        if missing_episode:
+            print("SAVING EPISODES DATA TO DB")
+            # Add if there is something inside the list
+            episodeTable.batch_update_all(episodes)
+
+        response["Episodes"].append(episodes)
 
         return response
+
+    def process_episode(self, episode, idx):
+        # There is no extra episode details in db
+        scraper = EpisodeFetcher(episode.pageUrl)
+
+        result = scraper.get_episode()
+
+        return result, idx
 
     def get_episode(self, date: str) -> dict:
         """

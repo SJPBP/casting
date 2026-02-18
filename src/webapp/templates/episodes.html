@@ -3,6 +3,39 @@
 
 <head>
   <title>Episodes</title>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+      const pageText = document.getElementById("page").innerText;
+      const previousBtn = document.getElementById("previous");
+      const nextBtn = document.getElementById("next");
+      
+      // Extract the number from "Current Page: X"
+      const page = parseInt(pageText.replace("Current Page:", "").trim(), 10);
+
+
+      if (page === 1) {
+          previousBtn.disabled = true;
+      }
+
+      nextBtn.addEventListener("click", function () {
+        console.log(page)
+        const params = new URLSearchParams(window.location.search);
+        params.set("page", page + 1);
+        window.location.search = params.toString();
+      });
+
+      previousBtn.addEventListener("click", function () {
+        console.log(page)
+        const params = new URLSearchParams(window.location.search);
+        params.set("page", page - 1);
+        window.location.search = params.toString();
+      });
+    });
+
+    
+
+
+    </script>
 </head>
 
 <body>
@@ -16,6 +49,9 @@
   <a href="http://127.0.0.1:5000/cast/Living Room TV?thumbnail={{episode.thumbnail}}&date={{episode.date}}&title={{episode.title}}&contentUrl={{episode.contentUrl}}">Living Room TV</a>
   <a href="http://127.0.0.1:5000/connect/Sofa Room TV/{{episode.title}}/{{episode.date}}/{{episode.thumbnail}}/{{episode.contentUrl}}">Sofa Room TV</a>
   {% endfor %}
+    <h3 id="page">Current Page: {{ page }}</h3>
+    <button id="previous" type="button">Previous Page</button>
+    <button id="next" type="button">Next Page</button>
 </body>
 
 </html>

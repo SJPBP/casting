@@ -22,7 +22,7 @@ class WebScaper:
             self.scrapedPage = True
         return self.soup
 
-    def find(self, xpath: str | None, soup=None, attr=None) -> str | None:
+    def find(self, xpath: str | None, soup=None, attr=None) -> str:
         """Return the text of content found using xpath"""
         if attr is not None:
             xpath = f"{xpath}/{attr}"
@@ -37,9 +37,9 @@ class WebScaper:
 
         except Exception as e:
             print(e)
-            return None
+            exit()
 
-    def find_all(self, xpath: str, soup=None, attr=None) -> str | None:
+    def find_all(self, xpath: str, soup=None, attr=None) -> str:
         if attr is not None:
             xpath = f"{xpath}/{attr}"
 
@@ -52,22 +52,21 @@ class WebScaper:
             return url
 
         except Exception as e:
-            print("From find_all")
             print(e)
-            return None
+            exit()
 
-    def runFunction(self, xpath: str | None, soup=None, attr=None) -> str | None:
+    def runFunction(self, xpath: str | None, soup=None, attr=None) -> str:
         """Return the result of function found using xpath"""
         if attr is not None:
             xpath = f"{xpath}/{attr}"
 
         try:
             if soup is None:
-                soup = self.scrape_page()
-                text: str = soup.xpath(xpath)
+                soup = self.scrape_page()  # Get page
+                text: str = soup.xpath(xpath)  # Find the data from page
             else:
-                text: str = soup.xpath(f".{xpath}")
-            return text
+                text: str = soup.xpath(f".{xpath}")  # Find the data from page
+            return text  # Return the data
         except Exception as e:
             print(e)
-            return None
+            exit()

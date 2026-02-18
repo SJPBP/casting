@@ -1,12 +1,11 @@
-from scrapers.TVShowScraper import TVShowScraper
-from scrapers.EpisodeScraper import EpisodeScraper
-
-from tables.TvShowTable import TvShowTable
-from tables.EpisodeTable import EpisodeTable
-from tables.Database import Database
-
-from classes.TVSHOW import TVSHOW
 from classes import EPISODE
+from classes.TVSHOW import TVSHOW
+from scrapers.EpisodeScraper import EpisodeScraper
+from scrapers.TVShowScraper import TVShowScraper
+from tables.Database import Database
+from tables.EpisodeTable import EpisodeTable
+from tables.TvShowTable import TvShowTable
+
 
 class TVShowService:
     def __init__(self, db: Database):
@@ -17,17 +16,16 @@ class TVShowService:
         db (Database): Connect to database
         """
         self.db = db
-    
-    
+
     def get_tvshows(self, channel: str, pageUrl: str):
         """
-        Retrieve data for the TV shows in given channel.
+                Retrieve data for the TV shows in given channel.
 
-        Parameters:
-        channel (str): The title of the channel for which data is being retrieved.
-pageUrl (str): URL of the channel page on ApneTV.
+                Parameters:
+                channel (str): The title of the channel for which data is being retrieved.
+        pageUrl (str): URL of the channel page on ApneTV.
         """
-        # Connect to db and use table named after channel 
+        # Connect to db and use table named after channel
         table = TvShowTable(self.db, channel=channel)
 
         response = {}
@@ -50,12 +48,12 @@ pageUrl (str): URL of the channel page on ApneTV.
 
     def get_tvshow(self, channel: str, pageUrl: str, name: str):
         """
-        Retrieve data for the specified TV show in given channel.
+                Retrieve data for the specified TV show in given channel.
 
-        Parameters:
-        channel (str): The title of the channel for which data is being retrieved.
-pageUrl (str): URL of the channel page on ApneTV.
-        name (str): The title of the TV show for which data is being retrieved.
+                Parameters:
+                channel (str): The title of the channel for which data is being retrieved.
+        pageUrl (str): URL of the channel page on ApneTV.
+                name (str): The title of the TV show for which data is being retrieved.
         """
         table = TvShowTable(self.db, channel=channel)
         show = TVSHOW(channel=channel, pageUrl=pageUrl, name=name)
@@ -74,9 +72,6 @@ pageUrl (str): URL of the channel page on ApneTV.
 
         episodeTable = EpisodeTable(self.db, tvshow.name)
 
-        
-
         response["TVShows"].append(tvshow)
 
         return response
-

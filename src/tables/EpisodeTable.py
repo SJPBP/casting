@@ -1,14 +1,15 @@
+from classes.EPISODE import EPISODE
 from tables.Database import Database
 from utils.Date import Date
-from classes.EPISODE import EPISODE
+
 
 class EpisodeTable:
     def __init__(self, db: Database, tvshowName: str) -> None:
-        self.db = db 
+        self.db = db
         self.Date = Date()
         self.name = tvshowName
         self.createTable()
-    
+
     def createTable(self):
         sql = f"""
             CREATE TABLE IF NOT EXISTS {self.name} (
@@ -27,6 +28,7 @@ class EpisodeTable:
         index = 1
         batch = []
         for episode in episodes:
+            index += 1
             # print(f"Adding episode {index}...")
 
             sql = f"""
@@ -35,10 +37,18 @@ class EpisodeTable:
                 """
 
             date = self.Date.convert_date_apnetv_to_mysql_format(episode.date)
-            batch.append((date, episode.pageUrl, episode.contentUrl, episode.title, episode.contentType, episode.thumbnail,))
+            batch.append(
+                (
+                    date,
+                    episode.pageUrl,
+                    episode.contentUrl,
+                    episode.title,
+                    episode.contentType,
+                    episode.thumbnail,
+                )
+            )
             # self.db.execute(sql, params=(date, episode.pageUrl, episode.contentUrl, episode.title, episode.contentType, episode.thumbnail,))
 
-            index += 1
         sql = f"""
                 INSERT INTO {self.name} (date, page_link, link, title, type, thumbnail)
                 VALUES (%s, %s, %s, %s, %s, %s);  
@@ -47,10 +57,9 @@ class EpisodeTable:
         self.db.execute(query=sql, params=batch, executemany=True)
 
         print("Added to the table")
-            
+
         # return episodes
 
-    
     def insert_all(self, episodes: list[EPISODE]) -> list[EPISODE] | None:
         """Insert all episodes in list"""
         index = 1
@@ -63,10 +72,20 @@ class EpisodeTable:
                 """
 
             date = self.Date.convert_date_apnetv_to_mysql_format(episode.date)
-            self.db.execute(sql, params=(date, episode.pageUrl, episode.contentUrl, episode.title, episode.contentType, episode.thumbnail,))
+            self.db.execute(
+                sql,
+                params=(
+                    date,
+                    episode.pageUrl,
+                    episode.contentUrl,
+                    episode.title,
+                    episode.contentType,
+                    episode.thumbnail,
+                ),
+            )
 
             index += 1
-            
+
         return episodes
 
     def insert(self, episode: EPISODE):
@@ -77,8 +96,18 @@ class EpisodeTable:
 
         date = self.Date.convert_date_apnetv_to_mysql_format(episode.date)
 
-        self.db.execute(sql, params=(date, episode.pageUrl, episode.contentUrl, episode.title, episode.contentType, episode.thumbnail,))
-   
+        self.db.execute(
+            sql,
+            params=(
+                date,
+                episode.pageUrl,
+                episode.contentUrl,
+                episode.title,
+                episode.contentType,
+                episode.thumbnail,
+            ),
+        )
+
     def oldest_episode(self) -> list[EPISODE]:
         sql = f"""
         SELECT * FROM {self.name} ORDER BY date LIMIT 1 OFFSET 0;
@@ -93,11 +122,17 @@ class EpisodeTable:
         episodes = []
 
         for row in rows:
-            episode = EPISODE(date=row["date"], pageUrl=row["page_link"], thumbnail=row["thumbnail"], contentUrl=row["link"], contentType=row["type"], title=row["title"])
+            episode = EPISODE(
+                date=row["date"],
+                pageUrl=row["page_link"],
+                thumbnail=row["thumbnail"],
+                contentUrl=row["link"],
+                contentType=row["type"],
+                title=row["title"],
+            )
             episodes.append(episode)
 
         return episodes
-
 
     def latest_episode(self) -> list[EPISODE]:
         sql = f"""
@@ -113,12 +148,19 @@ class EpisodeTable:
         episodes = []
 
         for row in rows:
-            episode = EPISODE(date=row["date"], pageUrl=row["page_link"], thumbnail=row["thumbnail"], contentUrl=row["link"], contentType=row["type"], title=row["title"])
+            episode = EPISODE(
+                date=row["date"],
+                pageUrl=row["page_link"],
+                thumbnail=row["thumbnail"],
+                contentUrl=row["link"],
+                contentType=row["type"],
+                title=row["title"],
+            )
             episodes.append(episode)
 
         return episodes
 
-    def get_all(self, startNumber: int, endNumber: int) -> list[EPISODE] | None:
+    def get_all(self, startNumber: int, endNumber: int) -> list[EPISODE]:
         """
         Retrieve a subset of data from the database based on specified range.
 
@@ -140,7 +182,7 @@ class EpisodeTable:
 
         if offset < 0:
             offset = 0
-            
+
         # sql = f"""
         #     SELECT * FROM (SELECT * FROM {self.name} ORDER BY date LIMIT {endNumber} OFFSET {offset}) as limited_dates ORDER BY date DESC;
         #
@@ -151,17 +193,24 @@ class EpisodeTable:
 
         rows = self.db.execute(sql, params=None, fetchall=True)
 
-        if not rows:
-            return None
+        try:
+            episodes = []
 
-        episodes = []
-
-        for row in rows:
-            episode = EPISODE(date=row["date"], pageUrl=row["page_link"], thumbnail=row["thumbnail"], contentUrl=row["link"], contentType=row["type"], title=row["title"])
-            episodes.append(episode)
+            for row in rows:
+                episode = EPISODE(
+                    date=row["date"],
+                    pageUrl=row["page_link"],
+                    thumbnail=row["thumbnail"],
+                    contentUrl=row["link"],
+                    contentType=row["type"],
+                    title=row["title"],
+                )
+                episodes.append(episode)
+        except Exception as e:
+            print(e)
+            exit()
 
         return episodes
-
 
     def get_by_date(self, date: str):
         episode = EPISODE(date=date)
@@ -170,21 +219,23 @@ class EpisodeTable:
            SELECT date, page_link, link, title, type, thumbnail from {self.name} WHERE date = (%s);
         """
 
-        row = self.db.execute(sql, params=(episode.convert_date_apnetv_to_mysql_format(),), fetchall=True)
+        row = self.db.execute(
+            sql, params=(episode.convert_date_apnetv_to_mysql_format(),), fetchall=True
+        )
 
         if not row:
             return None
 
         row = row[0]
-        
+
         return EPISODE(
-            date=row["date"], 
+            date=row["date"],
             pageUrl=row["page_link"],
-            thumbnail=row["thumbnail"], 
-            contentUrl=row["link"], 
+            thumbnail=row["thumbnail"],
+            contentUrl=row["link"],
             contentType=row["type"],
-            title=row["title"]
-                       )
+            title=row["title"],
+        )
 
     def delete(self, episode: EPISODE):
         sql = f"""
@@ -214,6 +265,40 @@ class EpisodeTable:
                 episode.contentType,
                 episode.thumbnail,
                 episode.convert_date_apnetv_to_mysql_format(),
-            )
+            ),
         )
 
+    def batch_update_all(self, episodes: list[EPISODE]) -> list[EPISODE] | None:
+        """Insert all episodes in list"""
+        index = 1
+        batch = []
+        for episode in episodes:
+            index += 1
+            # print(f"Adding episode {index}...")
+            date = self.Date.convert_date_apnetv_to_mysql_format(episode.date)
+
+            batch.append(
+                (
+                    episode.pageUrl,
+                    episode.contentUrl,
+                    episode.title,
+                    episode.contentType,
+                    episode.thumbnail,
+                    date,
+                )
+            )
+            # self.db.execute(sql, params=(date, episode.pageUrl, episode.contentUrl, episode.title, episode.contentType, episode.thumbnail,))
+
+        sql = f"""
+                UPDATE {self.name}
+                SET page_link = %s,
+                    link = %s,
+                    title = %s,
+                    type = %s,
+                    thumbnail = %s
+                WHERE date = %s;
+                """
+
+        self.db.execute(query=sql, params=batch, executemany=True)
+
+        print("Added to the table")

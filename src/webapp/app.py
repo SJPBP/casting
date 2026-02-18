@@ -61,17 +61,22 @@ def get_episode(tvshowName, url, date):
     return episode
 
 
-@app.route("/episodes/<string:tvshowName>/<path:url>/<int:page>")
-def get_episodes_with_limit(tvshowName, url, page):
-    if page <= 0:
+@app.route("/episodes")
+def get_episodes_with_limit():
+    tvshowName = request.args.get("tvshowName")
+    url = request.args.get("url")
+    page: int = int(request.args.get("page"))
+
+    if page <= 0 or page is None:
         page = 1
     tvshowName = tvshowName.replace(" ", "_")
     episodeService = EpisodeService(db, tvshowName=tvshowName, pageUrl=url)
+    print("***" * 20)
     end = page * 10
     start = end - 9
 
     episodes = episodeService.get_episodes(startNumber=start, endNumber=end)
-    return render_template("episodes.html", episodes=episodes["Episodes"][0])
+    return render_template("episodes.html", episodes=episodes["Episodes"][0], page=page)
 
 
 @app.route("/episodes/<string:tvshowName>/<path:url>/<int:start>/<int:end>")
@@ -177,8 +182,8 @@ def quit():
     return "done"
 
 
-@app.route("/current_time")
-def current_time():
+@app.route("/get_current_time")
+def get_current_time():
     device_name = request.args.get("device_name")
     print(device_name)
     connect(device_name)
@@ -186,9 +191,28 @@ def current_time():
     return f"{timestamp}"
 
 
+@app.route("/set_current_time")
+def set_current_time():
+    seek = request.args.get("timestamp")
+    if seek is None:
+        seek = 10
+
+    device_name = request.args.get("device_name")
+    print(device_name)
+    connect(device_name)
+
+    timestamp = caster.get_current_time()
+
+    if timestamp is not None:
+        caster.move_to(timestamp - seek)
+        pause()
+
+    return "Done"
+
+
 @app.route("/backward")
 def backward():
-    seek = request.args.get("time")
+    seek = request.args.get("amount")
     if seek is None:
         seek = 10
 
@@ -207,7 +231,7 @@ def backward():
 
 @app.route("/forward", methods=["GET"])
 def forward():
-    seek = request.args.get("time")
+    seek = request.args.get("amount")
     if seek is None:
         seek = 10
 

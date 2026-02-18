@@ -1,6 +1,8 @@
-from scrapers.WebScaper import WebScaper
-from classes.TVSHOW import TVSHOW
 import re
+
+from classes.TVSHOW import TVSHOW
+from scrapers.WebScaper import WebScaper
+
 
 class TVShowFetcher:
     def __init__(self, pageUrl: str | None = None, filePath: str | None = None) -> None:
@@ -29,17 +31,18 @@ class TVShowFetcher:
             date = self.webScraper.find(xpath=xpath, attr=attr, soup=episodesoup)
             episode["date"] = date
 
-
             # Find the page url
             xpath = ""
             attr = "@value"
-            episodePageUrl = self.webScraper.find(xpath=xpath,soup=episodesoup, attr=attr)
+            episodePageUrl = self.webScraper.find(
+                xpath=xpath, soup=episodesoup, attr=attr
+            )
 
             episodePageUrl = episodePageUrl.split("#")[-1]
             episode["url"] = episodePageUrl
 
             episodes.append(episode)
-            
+
         return episodes
 
     def get_tv_show(self):
@@ -57,28 +60,33 @@ class TVShowFetcher:
         # if latest_episode is None:
         #     episodes = scraper.shallow_search
         #     self.update_episodes()
-            
-        tvShow = TVSHOW(channel=channel, name=name, 
-                        thumbnail=thumbnail, totalEpisodes=totalEpisodes, 
-                        pageUrl=pageUrl, description=description)
+
+        tvShow = TVSHOW(
+            channel=channel,
+            name=name,
+            thumbnail=thumbnail,
+            totalEpisodes=totalEpisodes,
+            pageUrl=pageUrl,
+            description=description,
+        )
 
         return tvShow
-    
+
     def extract_page_url(self):
         xpath = '//form[@id="searchform"]'
-        attr = '@action'
-        
-        return self.webScraper.find(xpath=xpath, attr=attr)
+        attr = "@action"
+
+        self.webScraper.find(xpath=xpath, attr=attr)
 
     def extract_name(self):
         xpath = '//div[@class="cont-img"]/figure/img'
-        attr = '@alt'
+        attr = "@alt"
 
         return self.webScraper.find(xpath=xpath, attr=attr)
-    
+
     def extract_icon(self):
         xpath = '//div[@class="cont-img"]/figure/img'
-        attr = '@src'
+        attr = "@src"
 
         return self.webScraper.find(xpath=xpath, attr=attr)
 
@@ -87,19 +95,16 @@ class TVShowFetcher:
 
         result = int(self.webScraper.runFunction(xpath=xpath))
         return result
-    
+
     def extract_channel_name(self):
         xpath = '//h5[@class="contentp-channel-data"]/a'
-        attr = 'text()'
-        
+        attr = "text()"
+
         return self.webScraper.find(xpath=xpath, attr=attr)
 
-    
     def extract_description(self):
         xpath = '//div[@class="story-section"]'
         attr = "text()"
 
         desc = self.webScraper.find(xpath=xpath, attr=attr).strip()
         return desc
-
-
