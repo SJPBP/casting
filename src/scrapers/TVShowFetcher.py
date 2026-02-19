@@ -76,7 +76,7 @@ class TVShowFetcher:
         xpath = '//form[@id="searchform"]'
         attr = "@action"
 
-        self.webScraper.find(xpath=xpath, attr=attr)
+        return self.webScraper.find(xpath=xpath, attr=attr)
 
     def extract_name(self):
         xpath = '//div[@class="cont-img"]/figure/img'

@@ -71,6 +71,7 @@ class TVShowScraper:
         tvShowFetcher = TVShowFetcher(pageUrl=pageUrl)
 
         tvShow = tvShowFetcher.get_tv_show()
+        tvShow.pageUrl = pageUrl
 
         total_time = self.timer.end_timer("EX")
         print(
