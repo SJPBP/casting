@@ -46,8 +46,8 @@
   <h4>{{episode.date}}</h4>
   <img src="{{episode.thumbnail}}" alt="{{episode.title}} height="100" width="100">
   <br>
-  <a href="http://127.0.0.1:5000/cast/Living Room TV?thumbnail={{episode.thumbnail}}&date={{episode.date}}&title={{episode.title}}&contentUrl={{episode.contentUrl}}">Living Room TV</a>
-  <a href="http://127.0.0.1:5000/connect/Sofa Room TV/{{episode.title}}/{{episode.date}}/{{episode.thumbnail}}/{{episode.contentUrl}}">Sofa Room TV</a>
+  <a href="/cast/Living Room TV?thumbnail={{episode.thumbnail}}&date={{episode.date}}&title={{episode.title}}&contentUrl={{episode.contentUrl}}">Living Room TV</a>
+  <a href="/cast/Sofa Room TV?thumbnail={{episode.thumbnail}}&date={{episode.date}}&title={{episode.title}}&contentUrl={{episode.contentUrl}}">Living Room TV</a>
   {% endfor %}
     <h3 id="page">Current Page: {{ page }}</h3>
     <button id="previous" type="button">Previous Page</button>

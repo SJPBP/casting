@@ -14,7 +14,7 @@
     <div class="channels">
 
   {% for channel in channels %}
-  <a href="http://127.0.0.1:5000/tvshows/{{channel.name}}/{{channel.pageUrl}}">{{channel.id}}. {{channel.name}}
+  <a href="/tvshows/{{channel.name}}/{{channel.pageUrl}}">{{channel.id}}. {{channel.name}}
   <br>
   <img src="{{channel.logoUrl}}" alt="{{channel.name}} height="100" width="100">
   <br>

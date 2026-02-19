@@ -140,13 +140,19 @@ def cast(deviceName="Living Room TV"):
         title=title, date=date, thumbnail=thumbnail, contentUrl=contentUrl
     )
 
+    # Get ext of content
     episode.update_content_type()
+    # Make title unqiue by adding title
+    episode.add_date_to_title()
 
     cast_info: CAST = CAST(episode)
 
     print("CASTING TO TV")
     player.cast(cast_info)
     return "Done"
+    # if runned:
+    # else:
+    #     return "Failed to cast"
 
 
 # @app.route("/cast/<string:deviceName>", methods=["GET"])
