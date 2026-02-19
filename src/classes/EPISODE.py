@@ -1,9 +1,10 @@
 from dataclasses import dataclass
 from datetime import datetime
 
+
 @dataclass
 class EPISODE:
-    date: str 
+    date: str
     pageUrl: str | None = None
     thumbnail: str | None = None
     contentUrl: str | None = None
@@ -15,13 +16,13 @@ class EPISODE:
         """
         Return data in json
         """
-        return  {
+        return {
             "Date": self.date,
             "Thumbnail": self.thumbnail,
             "ContentUrl": self.contentUrl,
             "ContentType": self.contentType,
             "Title": self.title,
-            "PageUrl": self.pageUrl
+            "PageUrl": self.pageUrl,
         }
 
     def update_content_type(self) -> str:
@@ -31,6 +32,13 @@ class EPISODE:
         if self.contentUrl:
             self.contentType = self.contentUrl.split(".")[-1]
             return self.contentType
+
+    def add_date_to_title(self):
+        """
+        Add date to title and save it
+        """
+        if self.date is not None and self.title is not None:
+            self.title = self.title + " " + self.date
 
     def is_date_obj(self) -> bool:
         """
@@ -44,11 +52,14 @@ class EPISODE:
         else:
             return False
 
-    
     def ordinal(self, n: int):
         """Add th, st, dn, rd to numercal dates"""
-        return str(n) + ("th" if 4 <= n % 100 <=20 else { 1:"st", 2:"nd", 3:"rd"}.get(n%10, "th"))
-    
+        return str(n) + (
+            "th"
+            if 4 <= n % 100 <= 20
+            else {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
+        )
+
     def convert_date_apnetv_to_mysql_format(self) -> str:
         """Returns string date in format used in mysql db"""
         mysql_format = "%Y-%m-%d"
@@ -56,14 +67,14 @@ class EPISODE:
         # Check if date is datetime object
         if not self.is_date_obj():
             date = str(self.date)
-            
+
             # Convert string to datetime object in mysql_format
             date = self.convert_date_from_apnetv_format_to_desired(mysql_format)
 
-            return date        
+            return date
 
         # return self.date_in_apnetv_format(mysql_format)
-        
+
     def convert_date_from_mysql_to_apnetv_format(self) -> str:
         """
         Convert date from mysql into format usin in ApneTV
@@ -72,7 +83,7 @@ class EPISODE:
         apneTV_format = "%d %B %Y"
         mysql_format = "%Y-%m-%d"
         date = str(self.date)
-        
+
         if self.date_in_format(date, apneTV_format):
             return date
         else:
@@ -86,7 +97,6 @@ class EPISODE:
             # Convert date back to string
             date = str(date)
 
-
         # Format the date into apne tv format then spilt by space
         day, month, year = date.split()
 
@@ -97,7 +107,7 @@ class EPISODE:
         formated_date = f"{f_day} {month} {year}"
 
         return formated_date
-    
+
     def date_in_format(self, date, fmt: str) -> bool:
         """
         Check if the date matches the specified format.
@@ -115,13 +125,13 @@ class EPISODE:
             return True
         except ValueError:
             return False
-    
+
     def convert_date_from_apnetv_format_to_desired(self, fmt: str) -> str | bool:
         try:
             date = self.date
             # Get the date
             day = date.split()[0][-2:]
-            
+
             if day == "th":
                 formatedDate = datetime.strptime(date, "%dth %B %Y")
                 dt = formatedDate.strftime(fmt)
