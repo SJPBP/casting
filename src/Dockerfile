@@ -8,6 +8,7 @@ COPY . /app
 
 # Disable development dependencies
 ENV UV_NO_DEV=1
+ENV PYTHONUNBUFFERED=1
 
 # Sync the project into a new environment, asserting the lockfile is up to date
 RUN uv init .
