@@ -53,6 +53,7 @@ class Caster:
                 chromecasts, _ = pychromecast.get_listed_chromecasts(
                     friendly_names=[self.castingDevice]
                 )
+                chromecast: pychromecast.Chromecast = chromecasts[0]
 
             return chromecast
         except IndexError:
@@ -245,7 +246,10 @@ class Caster:
 
 if __name__ == "__main__":
     URL = "https://si.videoapne.to/bdohxy5m7bboxuzvta5p4gqvtqipmm7gm36svw2vdbeu6gdhdq2ycw3x3vua/v.mp4"
-    URL = "https://s2.videoapne.to/hls/,bdohwygw7bboxuzvta574eqltc3dzxtncki6twj6xgsjbtxy2vvzpbex6z4a,.urlset/master.m3u8"
+    # URL = "https://s2.videoapne.to/hls/,bdohwygw7bboxuzvta574eqltc3dzxtncki6twj6xgsjbtxy2vvzpbex6z4a,.urlset/master.m3u8"
+    cast = Caster()
+    cast.find("Living Room TV")
+    print(cast.getDeviceName())
     # URL = "https://si.videoapne.to/bdohwrow7bboxuzvta574fif3ioqycxvz3zlm35j6sf6vloxgnadx7vd5fvq/v.mp4"
     # cast = Caster(URL, timeStamp=0, content_type="application/x-mpegurl", title="Bigg Boss 19")
     # cast.find("Living Room TV")
