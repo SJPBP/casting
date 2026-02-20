@@ -1,3 +1,7 @@
+FROM ubuntu:22.04
+
+RUN apt-get update && apt-get install avahi-utils -y
+
 FROM ghcr.io/astral-sh/uv:python3.14-alpine3.23
 
 # Sync the project into a new environment, asserting the lockfile is up to date
