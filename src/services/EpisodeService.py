@@ -102,10 +102,10 @@ class EpisodeService:
         # I have some episode(s) that are missing data
         if missing_episode:
             print("SAVING EPISODES DATA TO DB")
-            self.db_executor.submit(self.save_to_db, self.db, self.tvshowName, episodes)
+            # self.db_executor.submit(self.save_to_db, self.db, self.tvshowName, episodes)
 
             # Add if there is something inside the list
-            # episodeTable.batch_update_all(episodes)
+            episodeTable.batch_update_all(episodes)
 
         response["Episodes"].append(episodes)
 
