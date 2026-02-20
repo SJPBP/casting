@@ -9,18 +9,18 @@ class Player:
     def __init__(self, device_name: str) -> None:
         self.device_name: str = device_name
         self.caster = Caster()
-        self.chromecast_obj: pychromecast.Chromecast = self.get_chromecast_of(
+        self.chromecast_obj: pychromecast.Chromecast | None = self.get_chromecast_of(
             device_name
         )
-        self.wait_for_connect_to_tv()
+        self.caster.connect(self.chromecast_obj)
+        # self.wait_for_connect_to_tv()
 
     def get_chromecast_of(self, device_name: str) -> pychromecast.Chromecast:
-        chromecast = self.caster.find(device_name)
+        chromecast: pychromecast.Chromecast = self.caster.find(device_name)
 
         return chromecast
 
     def wait_for_connect_to_tv(self):
-        self.caster.connect(self.chromecast_obj)
         print("WAITING FOR TV TO CONNECT")
         while self.caster.getContentTitle() is None:
             print(self.caster.getContentTitle())

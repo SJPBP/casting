@@ -2,6 +2,7 @@ import os
 import sqlite3
 
 import mysql.connector
+from mysql.connector import pooling
 
 
 class Database:
@@ -13,10 +14,19 @@ class Database:
         self.ip_address = None
         self.port = None
 
+        # Hold pool of connection to db
+        self.pool = None
+
         # Find the above db variable from OS env
         self.set_db_variables()
 
         self.connection = self.connect_to_db()
+
+    def change_connection(self, connection):
+        old_connection = self.connection
+        self.connection = connection
+
+        return old_connection
 
     def close(self):
         self.connection.close()
@@ -71,6 +81,10 @@ class Database:
         # Close the database
         connection.close()
 
+    def create_pool(self, config):
+        pool = pooling.MySQLConnectionPool(pool_name="caster", pool_size=5, **config)
+        self.pool = pool
+
     def connect_to_db(self):
         config = {
             "user": f"{self.username}",
@@ -81,7 +95,10 @@ class Database:
         }
         try:
             print("Connecting to Server")
-            connection = mysql.connector.connect(**config)
+            self.create_pool(config)
+            # connection = mysql.connector.connect(**config)
+            connection = self.pool.get_connection()
+
             print("Connected")
 
             # Cursor which connects to database

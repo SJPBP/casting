@@ -8,6 +8,7 @@ from classes.CAST import CAST
 from classes.EPISODE import EPISODE
 from services.ChannelService import ChannelService
 from services.EpisodeService import EpisodeService
+from services.TimerService import TimerService
 from services.TVShowService import TVShowService
 from tables.Database import Database
 
@@ -20,6 +21,7 @@ caster = Caster()
 # cast = None
 
 devices = {}
+timer = TimerService()
 
 # obj created by getting chromecast device
 # It will have self.cast = pychromecast.get_chromecasts()[0]
@@ -86,6 +88,7 @@ def get_episode(tvshowName, url, date):
 
 @app.route("/episodes")
 def get_episodes_with_limit():
+    timer.start_timer("episodes")
     tvshowName = request.args.get("tvshowName")
     url = request.args.get("url")
     page: int = int(request.args.get("page"))
@@ -99,6 +102,8 @@ def get_episodes_with_limit():
     start = end - 9
 
     episodes = episodeService.get_episodes(startNumber=start, endNumber=end)
+    total_time = timer.end_timer("episodes")
+    print(f"Getting episodes took {total_time} seconds")
     return render_template("episodes.html", episodes=episodes["Episodes"][0], page=page)
 
 

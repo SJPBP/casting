@@ -1,6 +1,7 @@
 import time
 
 import pychromecast
+import zeroconf
 from pychromecast.controllers import media
 from pychromecast.discovery import CastBrowser
 
@@ -26,8 +27,18 @@ class Caster:
 
         return self.chromecast
 
-    def find_Chromecast(self) -> pychromecast.Chromecast:
+    def find_Chromecast(self) -> pychromecast.Chromecast | bool:
         try:
+            zconf = zeroconf.Zeroconf()
+            browser = pychromecast.CastBrowser(
+                pychromecast.SimpleCastListener(
+                    lambda uuid, service: print(browser.devices[uuid].friendly_name)
+                ),
+                zconf,
+            )
+            browser.start_discovery()
+            pychromecast.discovery.stop_discovery(browser)
+
             # Discover and connect to more than one device
             if self.castingDevice == "":
                 chromecasts, _ = pychromecast.get_listed_chromecasts(
@@ -43,12 +54,10 @@ class Caster:
                     friendly_names=[self.castingDevice]
                 )
 
-                chromecast: pychromecast.Chromecast = chromecasts[0]
-
             return chromecast
-        except Exception as e:
-            print(e)
-            quit()
+        except IndexError:
+            print("FAILED TO FIND DEVICE ON NETWORK")
+            return False
 
     def ask_user(self, chromecasts: list[pychromecast.Chromecast]):
         # Ouput options asking for which casting device to use

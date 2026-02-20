@@ -20,7 +20,7 @@ class TVShowScraper:
 
         futures = []
 
-        with ThreadPoolExecutor(max_workers=5) as executor:
+        with ThreadPoolExecutor(max_workers=9) as executor:
             # Looking for current tv shows
             xpath = '//li[@class="serial-item"]'
             self.soup = self.webScraper.find_all(xpath)
@@ -35,7 +35,7 @@ class TVShowScraper:
                 )
                 futures.append(job)
 
-        with ThreadPoolExecutor(max_workers=5) as executor:
+        with ThreadPoolExecutor(max_workers=9) as executor:
             # Looking for old tv shows
             xpath = '//ul[@class="old-link-list"]/li'
             self.soup = self.webScraper.find_all(xpath)

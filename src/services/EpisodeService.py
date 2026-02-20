@@ -27,6 +27,8 @@ class EpisodeService:
 
         self.timer = TimerService()
 
+        self.db_executor = ThreadPoolExecutor(max_workers=4)
+
     def shallow_search(self):
         print(f"RUNNING SHALLOW SEARCH ON {self.tvshowName}")
         episodeTable = EpisodeTable(self.db, tvshowName=self.tvshowName)
@@ -79,7 +81,7 @@ class EpisodeService:
         # Prevent putting episodes with completed data
         missing_episode: bool = False
 
-        with ThreadPoolExecutor(max_workers=10) as executor:
+        with ThreadPoolExecutor(max_workers=11) as executor:
             futures = []
 
             # Loop through all episode, check if even one episode is missing data then get it
@@ -100,12 +102,24 @@ class EpisodeService:
         # I have some episode(s) that are missing data
         if missing_episode:
             print("SAVING EPISODES DATA TO DB")
+            self.db_executor.submit(self.save_to_db, self.db, self.tvshowName, episodes)
+
             # Add if there is something inside the list
-            episodeTable.batch_update_all(episodes)
+            # episodeTable.batch_update_all(episodes)
 
         response["Episodes"].append(episodes)
 
+        print("RETURNING DATA")
         return response
+
+    def save_to_db(self, db, tvshowName, episodes):
+        connection = self.db.pool.create_connection()
+        old_connection = self.db.change_connection(connection)
+
+        episodeTable = EpisodeTable(db, tvshowName=tvshowName)
+        episodeTable.batch_update_all(episodes)
+
+        self.db.connection(old_connection)
 
     def process_episode(self, episode, idx):
         # There is no extra episode details in db

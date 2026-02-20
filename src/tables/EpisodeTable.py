@@ -187,6 +187,7 @@ class EpisodeTable:
         #     SELECT * FROM (SELECT * FROM {self.name} ORDER BY date LIMIT {endNumber} OFFSET {offset}) as limited_dates ORDER BY date DESC;
         #
         # """
+        endNumber = 10
         sql = f"""
             SELECT * FROM {self.name} ORDER BY date desc LIMIT {endNumber} OFFSET {offset};  
         """
