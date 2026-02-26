@@ -1,6 +1,6 @@
-async function call_server(msg) {
+async function call_server(deviceName) {
   try {
-    const response = await fetch(`http://localhost:5000/${msg}`);
+    const response = await fetch(`/${deviceName}`);
     const data = await response.json(); // or .text()
     console.log(data);
   } catch (error) {

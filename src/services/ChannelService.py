@@ -1,4 +1,5 @@
-from classes.CHANNEL import CHANNEL
+from concurrent.futures import ThreadPoolExecutor
+
 from scrapers.ChannelScraper import ChannelScraper
 from tables.ChannelTable import ChannelTable
 from tables.Database import Database
@@ -18,6 +19,8 @@ class ChannelService:
         # This ApneTV Main Page
         # This is the base or start page for scraping
         self.pageUrl = "https://apnetv.xyz/"
+
+        self.executor = ThreadPoolExecutor(max_workers=5)
 
     def get_channels(self):
         """
@@ -41,7 +44,11 @@ class ChannelService:
             # Obtain the data from the website
             scraper = ChannelScraper(self.pageUrl)
             channels = scraper.get_channels()
-            channels = self.table.insert_all(channels)
+
+            # Run DB save in background
+            self.executor.submit(self.save_to_db, self.db, channels)
+
+            # channels = self.table.insert_all(channels)
 
         # Put the data for each channel in json
         for chn in channels:
@@ -77,3 +84,10 @@ class ChannelService:
         response["Channels"].append(channel)
 
         return response
+
+    def save_to_db(self, db, channels):
+        # Connect to table that will save data
+        table = ChannelTable(db)
+
+        # Now save it
+        table.insert_all(channels)

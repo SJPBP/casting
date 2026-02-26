@@ -1,9 +1,8 @@
-from classes import EPISODE
+from concurrent.futures import ThreadPoolExecutor
+
 from classes.TVSHOW import TVSHOW
-from scrapers.EpisodeScraper import EpisodeScraper
 from scrapers.TVShowScraper import TVShowScraper
 from tables.Database import Database
-from tables.EpisodeTable import EpisodeTable
 from tables.TvShowTable import TvShowTable
 
 
@@ -16,6 +15,9 @@ class TVShowService:
         db (Database): Connect to database
         """
         self.db = db
+
+        # Needs to be global to make thread work in background
+        self.executor = ThreadPoolExecutor(max_workers=5)
 
     def get_tvshows(self, channel: str, pageUrl: str):
         """
@@ -39,7 +41,9 @@ class TVShowService:
             # Obtain the data from the website
             scraper = TVShowScraper(pageUrl)
             tvshows = scraper.get_tv_shows()
-            tvshows = table.insert_all(tvshows)
+
+            # Run DB save in background
+            self.executor.submit(self.save_to_db, self.db, channel, tvshows)
 
         for tvshow in tvshows:
             response["TVShows"].append(tvshow)
@@ -70,8 +74,13 @@ class TVShowService:
             tvshow = scraper.get_tvshow(name)
             table.insert(tvshow["TVShows"][0])
 
-        episodeTable = EpisodeTable(self.db, tvshow.name)
-
         response["TVShows"].append(tvshow)
 
         return response
+
+    def save_to_db(self, db, channel, tvshows):
+        # Connect to table that will save data
+        table = TvShowTable(db, channel=channel)
+
+        # Now save it
+        table.insert_all(tvshows)

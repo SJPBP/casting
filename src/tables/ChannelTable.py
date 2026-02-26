@@ -1,9 +1,10 @@
-from tables.Database import Database
 from classes.CHANNEL import CHANNEL
+from tables.Database import Database
+
 
 class ChannelTable:
     def __init__(self, db: Database) -> None:
-        self.db = db 
+        self.db = db
         self.createTable()
 
     def createTable(self):
@@ -30,11 +31,18 @@ class ChannelTable:
                         VALUES (%s, %s, %s); 
                 """
 
-            self.db.execute(sql, params=(channel.name, channel.logoUrl, channel.pageUrl,))
+            self.db.execute(
+                sql,
+                params=(
+                    channel.name,
+                    channel.logoUrl,
+                    channel.pageUrl,
+                ),
+            )
             channel.id = index
 
             index += 1
-            
+
         return channels
 
     def insert(self, channel: CHANNEL) -> CHANNEL | None:
@@ -43,7 +51,14 @@ class ChannelTable:
                     VALUES (%s, %s, %s); 
             """
 
-        self.db.execute(sql, params=(channel.name, channel.logoUrl, channel.pageUrl,))
+        self.db.execute(
+            sql,
+            params=(
+                channel.name,
+                channel.logoUrl,
+                channel.pageUrl,
+            ),
+        )
         row = self.db.execute("SELECT LAST_INSERT_ID() AS id", fetchone=True)
 
         if not row:
@@ -52,7 +67,7 @@ class ChannelTable:
         channel.id = int(row["id"])
 
         return channel
-    
+
     def get_all(self) -> CHANNEL:
         """Return all the data inside the database"""
         sql = """
@@ -67,11 +82,15 @@ class ChannelTable:
         channels = []
 
         for row in rows:
-            channel = CHANNEL(id=row["id"], name=row["name"],logoUrl=row["logo_url"], pageUrl=row["page_url"])
+            channel = CHANNEL(
+                id=row["id"],
+                name=row["name"],
+                logoUrl=row["logo_url"],
+                pageUrl=row["page_url"],
+            )
             channels.append(channel)
 
         return channels
-
 
     def get_by_name(self, name: str):
         sql = f"""
@@ -83,7 +102,12 @@ class ChannelTable:
         if not row:
             return None
         row = row[0]
-        return CHANNEL(id=row["id"], name=row["name"],logoUrl=row["logo_url"], pageUrl=row["page_url"])
+        return CHANNEL(
+            id=row["id"],
+            name=row["name"],
+            logoUrl=row["logo_url"],
+            pageUrl=row["page_url"],
+        )
 
     def get_by_id(self, channel: CHANNEL):
         sql = f"""
@@ -95,8 +119,13 @@ class ChannelTable:
         if not row:
             return None
         row = row[0]
-        return CHANNEL(id=row["id"], name=row["name"],logoUrl=row["logo_url"], pageUrl=row["page_url"])
-    
+        return CHANNEL(
+            id=row["id"],
+            name=row["name"],
+            logoUrl=row["logo_url"],
+            pageUrl=row["page_url"],
+        )
+
     def delete(self, channel: CHANNEL):
         """Delete Channel"""
         sql = f"""
@@ -113,4 +142,12 @@ class ChannelTable:
         SET name = (%s), logo_url = (%s), page_url = (%s) WHERE id = (%s);
         """
 
-        self.db.execute(sql, params=(channel.name, channel.logoUrl, channel.pageUrl, channel.id,))
+        self.db.execute(
+            sql,
+            params=(
+                channel.name,
+                channel.logoUrl,
+                channel.pageUrl,
+                channel.id,
+            ),
+        )

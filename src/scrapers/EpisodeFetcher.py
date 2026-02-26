@@ -23,7 +23,9 @@ class EpisodeFetcher:
             contentUrl=contentUrl,
             title=title,
         )
+
         episode.contentType = episode.update_content_type()
+
         return episode
 
     def extract_date(self):

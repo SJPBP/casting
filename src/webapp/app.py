@@ -154,10 +154,7 @@ def cast(deviceName="Living Room TV"):
 
     print("CASTING TO TV")
     player.cast(cast_info)
-    return "Done"
-    # if runned:
-    # else:
-    #     return "Failed to cast"
+    return render_template("media_player.html")
 
 
 # @app.route("/cast/<string:deviceName>", methods=["GET"])

@@ -22,36 +22,41 @@ class EpisodeService:
         self.tvshowName = tvshowName
         self.pageUrl = pageUrl
 
+        # Needs to be global to make thread work in background
+        self.executor = ThreadPoolExecutor(max_workers=5)
+
         # get all episodes date and urls and save them in db
         self.shallow_search()
 
         self.timer = TimerService()
 
-        self.db_executor = ThreadPoolExecutor(max_workers=4)
-
     def shallow_search(self):
         print(f"RUNNING SHALLOW SEARCH ON {self.tvshowName}")
         episodeTable = EpisodeTable(self.db, tvshowName=self.tvshowName)
+        print(self.tvshowName)
 
         episodeScraper = EpisodeScraper(pageUrl=self.pageUrl)
 
         latest_episode_date: list[EPISODE] | None = episodeTable.latest_episode()
 
-        # Table is filled, but behind then start adding until top episode from table
+        # Table is filled, but it is behind so start adding until top episode from table
         if latest_episode_date is None:
             # Find all the episodes
+            print("Searching All Episodes")
             episodes: list[EPISODE] = episodeScraper.shallow_search()
 
         else:
             latest_episode_date = latest_episode_date[
                 0
             ].convert_date_from_mysql_to_apnetv_format()
+            print(f"Searching Episodes After {latest_episode_date}")
 
             episodes: list[EPISODE] = episodeScraper.shallow_search(latest_episode_date)
 
         if len(episodes) != 0:
-            print("RESUTL FROM SHALLOW SEARCH")
-            # Add if there is something inside the list
+            print("Saving Results")
+
+            # self.executor.submit(self.save_to_db, self.db, self.tvshowName, episodes)
             episodeTable.batch_insert_all(episodes)
 
         return True
@@ -81,45 +86,63 @@ class EpisodeService:
         # Prevent putting episodes with completed data
         missing_episode: bool = False
 
-        with ThreadPoolExecutor(max_workers=11) as executor:
+        with ThreadPoolExecutor(max_workers=15) as executor:
             futures = []
 
             # Loop through all episode, check if even one episode is missing data then get it
             for idx, episode in enumerate(episodes):
                 episode.date = episode.convert_date_from_mysql_to_apnetv_format()
+
                 if episode.contentUrl is None:
+                    # There is missing episode so I will have to run method to save to db
+                    missing_episode = True
+
                     print(f"MISSING DATA FOR EPISODE WITH DATE: {episode.date}")
+
                     job = executor.submit(self.process_episode, episode, idx)
+
                     futures.append(job)
 
-                    missing_episode = True
                 else:
                     episodes[idx] = episode
+
             for future in as_completed(futures):
                 updated_episode, idx = future.result()
+
                 episodes[idx] = updated_episode
 
         # I have some episode(s) that are missing data
         if missing_episode:
-            print("SAVING EPISODES DATA TO DB")
             # self.db_executor.submit(self.save_to_db, self.db, self.tvshowName, episodes)
 
-            # Add if there is something inside the list
-            episodeTable.batch_update_all(episodes)
+            # Run DB save in background
+            self.executor.submit(
+                self.update_all_to_db, self.db, self.tvshowName, episodes
+            )
+
+            # episodeTable.batch_update_all(episodes)
 
         response["Episodes"].append(episodes)
 
         print("RETURNING DATA")
+
         return response
 
-    def save_to_db(self, db, tvshowName, episodes):
-        connection = self.db.pool.create_connection()
-        old_connection = self.db.change_connection(connection)
-
+    def insert_all_to_db(self, db, tvshowName, episodes):
+        # Connect to table that will save data
         episodeTable = EpisodeTable(db, tvshowName=tvshowName)
-        episodeTable.batch_update_all(episodes)
 
-        self.db.connection(old_connection)
+        # Now save it
+        episodeTable.batch_insert_all(episodes)
+
+    def update_all_to_db(self, db, tvshowName, episodes):
+        print("SAVING EPISODES DATA TO DB")
+
+        # Connect to table that will save data
+        episodeTable = EpisodeTable(db, tvshowName=tvshowName)
+
+        # Now save it
+        episodeTable.batch_update_all(episodes)
 
     def process_episode(self, episode, idx):
         # There is no extra episode details in db

@@ -20,7 +20,17 @@ class Database:
         # Find the above db variable from OS env
         self.set_db_variables()
 
-        self.connection = self.connect_to_db()
+        # Create a pool and database
+        # And set the pool to self.pool
+        self.connect_to_db()
+
+    def get_db_connection(self):
+        conn = self.pool.get_connection()
+        try:
+            conn.ping(reconnect=True, attempts=3, delay=2)
+        except Exception:
+            conn.reconnect()
+        return conn
 
     def change_connection(self, connection):
         old_connection = self.connection
@@ -39,26 +49,37 @@ class Database:
         fetchall: bool = False,
         executemany: bool = False,
     ):
-        cur = self.connection.cursor(dictionary=True)
+        # Get connection from pool if avaiable
+        connection = self.get_db_connection()
+        cur = connection.cursor(dictionary=True)
+        cur.execute(f"USE {self.database}")
+        result = None
 
         try:
+            # Run the query to db
             if executemany:
                 cur.executemany(query, params or ())
             else:
                 cur.execute(query, params or ())
+
+            # Get data if asked
+            if fetchone:
+                result = cur.fetchone()
+            if fetchall:
+                result = cur.fetchall()
+            else:
+                result = None
+
+            connection.commit()  # save the changes to db
+
         except mysql.connector.errors.IntegrityError as e:
             if e.errno == 1062:
                 print("Creating Duplicate entry, skipping!")
+        finally:
+            # Close the connection
+            cur.close()
+            connection.close()
 
-        if fetchone:
-            result = cur.fetchone()
-        if fetchall:
-            result = cur.fetchall()
-        else:
-            result = None
-
-        self.connection.commit()
-        cur.close()
         return result
 
     # def __del__(self):
@@ -81,10 +102,6 @@ class Database:
         # Close the database
         connection.close()
 
-    def create_pool(self, config):
-        pool = pooling.MySQLConnectionPool(pool_name="caster", pool_size=5, **config)
-        self.pool = pool
-
     def connect_to_db(self):
         config = {
             "user": f"{self.username}",
@@ -95,8 +112,12 @@ class Database:
         }
         try:
             print("Connecting to Server")
-            self.create_pool(config)
+            self.pool = pooling.MySQLConnectionPool(
+                pool_name="caster", pool_size=5, **config
+            )
             # connection = mysql.connector.connect(**config)
+
+            # Create a connection to create the database needed
             connection = self.pool.get_connection()
 
             print("Connected")
@@ -109,10 +130,9 @@ class Database:
             cursor.execute(f"USE {self.database}")
 
             cursor.close()
+            connection.close()
 
             print("Successfully connected to Storage")
-
-            return connection
 
         except Exception as e:
             print(e)
