@@ -1,5 +1,3 @@
-import time
-
 from flask import Flask, redirect, render_template, request
 
 from caster.Caster import Caster

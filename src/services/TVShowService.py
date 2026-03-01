@@ -52,12 +52,12 @@ class TVShowService:
 
     def get_tvshow(self, channel: str, pageUrl: str, name: str):
         """
-                Retrieve data for the specified TV show in given channel.
+        Retrieve data for the specified TV show in given channel.
 
-                Parameters:
-                channel (str): The title of the channel for which data is being retrieved.
+        Parameters:
+        channel (str): The title of the channel for which data is being retrieved.
         pageUrl (str): URL of the channel page on ApneTV.
-                name (str): The title of the TV show for which data is being retrieved.
+        name (str): The title of the TV show for which data is being retrieved.
         """
         table = TvShowTable(self.db, channel=channel)
         show = TVSHOW(channel=channel, pageUrl=pageUrl, name=name)
@@ -68,10 +68,15 @@ class TVShowService:
         # TV show data is not in the database.
         tvshow = table.get_by_channel(show)
 
-        if tvshow is None:
+        # None: There is no data on tv show in db
+        # False: Couldn't even connect to db
+        if tvshow is None or tvshow is False:
             # Obtain the data from the website
             scraper = TVShowScraper(pageUrl)
+
             tvshow = scraper.get_tvshow(name)
+
+            # Save data to db
             table.insert(tvshow["TVShows"][0])
 
         response["TVShows"].append(tvshow)

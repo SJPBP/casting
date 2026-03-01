@@ -1,0 +1,46 @@
+What I Want To Implement?
+I want to get connection from connection pool to run queries.
+
+How It Suppose To Run? 
+1. Get connection from pool
+2. Do a ping() meaning check if connection to db is alive
+2.1 If not wait 2 seconds
+2.2 Try again and decrease attempt by 1
+2.3 Go to 2.1 and keep doing until attempt is 0, starts at 3 so trying 3 times to connect to db
+3. If Connected to DB, return connection
+3. If Failed, return False
+
+What Problems It Can Face?
+
+Problem 1. 
+The db was not working from start so when trying to connect to db by pool it will cause error
+
+How It Will Run?
+1. The DB is down
+2. I try to create a pool
+3. It will raise mysql.connector.errors.InterfaceError Error
+4. I will tell why it failed and return False 
+
+Problem 2. 
+The db is down after I got the pool
+
+How It Will Run?
+1. I gotten the pool obj
+2. DB shuts down after pool is created
+3. I am trying to get run connection() to get connection from pool
+4. I get mysql.connector.errors.InterfaceError OR mysql.connector.errors.OperationalError Error
+5. I will tell why it failed and return False 
+
+Problem 3.
+The db is down after getting the connection from pool
+
+How It Will Run?
+1. I got connection from pool
+2. DB shuts down after connection is obtained
+3. I try to run execute(), fetchone() or fetchall(), or commit() to run a query on db
+4. It get mysql.connector.errors.InterfaceError OR mysql.connector.errors.OperationalError Error
+5. I will tell why it failed and return False  
+
+
+
+

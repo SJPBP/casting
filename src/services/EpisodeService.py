@@ -71,6 +71,7 @@ class EpisodeService:
         oldShow (bool): Indicates whether the TV show has concluded; this value is always `False`.
         """
         print(f"GETTING EPISODES FOR TVSHOW: {self.tvshowName}")
+
         # Connect to db and use table named after tvshow
         episodeTable = EpisodeTable(self.db, tvshowName=self.tvshowName)
 
@@ -78,12 +79,19 @@ class EpisodeService:
         response["Episodes"] = []
 
         print("GETTING DATA FROM DB")
+
         # Obtain Episode data from the database.
         episodes: list[EPISODE] = episodeTable.get_all(
             startNumber=startNumber, endNumber=endNumber
         )
 
-        # Prevent putting episodes with completed data
+        # Couldn't connect to database
+        # So I can't run next code so just stop
+        if episodes is False:
+            return response
+
+        # Prevent putting episodes with completed data in db
+        # Means there is data which missing in db so I have to things I need to save
         missing_episode: bool = False
 
         with ThreadPoolExecutor(max_workers=15) as executor:
@@ -99,16 +107,21 @@ class EpisodeService:
 
                     print(f"MISSING DATA FOR EPISODE WITH DATE: {episode.date}")
 
+                    # Get episode data in background
                     job = executor.submit(self.process_episode, episode, idx)
-
                     futures.append(job)
 
-                else:
-                    episodes[idx] = episode
+                # TODO: Check If This Commenting Else Statement Cause Error
+                # If Yes Remove comment else Remove Else Statement
+                # else:
+                #     # Data is not missing so add to
+                #     episodes[idx] = episode
 
             for future in as_completed(futures):
+                # Get Missing data obtained from website
                 updated_episode, idx = future.result()
 
+                # Save the data from where it takes from in list
                 episodes[idx] = updated_episode
 
         # I have some episode(s) that are missing data

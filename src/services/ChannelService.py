@@ -14,12 +14,15 @@ class ChannelService:
         db (Database): Allows to work with database
         """
         self.db = db
+
+        # Creates channel table on Database
         self.table = ChannelTable(self.db)
 
         # This ApneTV Main Page
         # This is the base or start page for scraping
         self.pageUrl = "https://apnetv.xyz/"
 
+        # Used to save data to db in background
         self.executor = ThreadPoolExecutor(max_workers=5)
 
     def get_channels(self):
@@ -39,8 +42,9 @@ class ChannelService:
         # Obtain data of channels stored in database
         channels = self.table.get_all()
 
-        # There is no data on channels in db
-        if channels is None:
+        # None: There is no data on channels in db
+        # False: Couldn't even connect to db
+        if channels is None or channels is False:
             # Obtain the data from the website
             scraper = ChannelScraper(self.pageUrl)
             channels = scraper.get_channels()

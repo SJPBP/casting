@@ -24,12 +24,40 @@ class Database:
         # And set the pool to self.pool
         self.connect_to_db()
 
-    def get_db_connection(self):
-        conn = self.pool.get_connection()
+    def get_connection(self) -> mysql.connector.pooling.PooledMySQLConnection | None:
+        """
+        Return either working connect at the moment(Connection can be not working later when used)
+        OR
+        False because couldn't connect to db
+        """
+        print("Getting Connection From Pool: ", end="")
         try:
+            conn = self.pool.get_connection()
             conn.ping(reconnect=True, attempts=3, delay=2)
-        except Exception:
-            conn.reconnect()
+            # conn.ping()
+            # Checks if the current MySQL connection is alive by sending a lightweight ping to the server.
+            # Raises an error if the server does not respond.
+
+            # reconnect=True
+            # Automatically tries to reconnect if the connection is found to be dead.
+            # Without this, ping() would immediately raise an exception.
+
+            # attempts=3
+            # Number of times to retry reconnecting before giving up.
+            # If all attempts fail, an error is raised.
+
+            # delay=2
+            # Wait time (in seconds) between reconnect attempts.
+            # This is not a timeout, just a pause between retries.
+            print("SUCCEEDED!")
+        except Exception as e:
+            # InterfaceError
+            # Raised when the connection is unavailable or reconnect attempts fail.
+            # Indicates the database could not be reached or restored.
+
+            print(e)
+            print("FAILED!")
+            return None
         return conn
 
     def change_connection(self, connection):
@@ -49,13 +77,22 @@ class Database:
         fetchall: bool = False,
         executemany: bool = False,
     ):
+        print("Running Query To Mysql Server")
         # Get connection from pool if avaiable
-        connection = self.get_db_connection()
-        cur = connection.cursor(dictionary=True)
-        cur.execute(f"USE {self.database}")
-        result = None
+        connection = self.get_connection()
+
+        if connection is None:
+            print("Failed To Run Query Because Of No Connection To Server!")
+            return False
 
         try:
+            # Holds results from DATABASE
+            results = None
+
+            cur = connection.cursor(dictionary=True)
+
+            cur.execute(f"USE {self.database}")
+
             # Run the query to db
             if executemany:
                 cur.executemany(query, params or ())
@@ -64,28 +101,39 @@ class Database:
 
             # Get data if asked
             if fetchone:
-                result = cur.fetchone()
+                results = cur.fetchone()
             if fetchall:
-                result = cur.fetchall()
+                results = cur.fetchall()
             else:
-                result = None
+                results = None
 
             connection.commit()  # save the changes to db
+
+            print("Successfully Runned The Query!")
 
         except mysql.connector.errors.IntegrityError as e:
             if e.errno == 1062:
                 print("Creating Duplicate entry, skipping!")
+        except Exception as e:
+            print(e)
+            print("FAILED TO RUNNED THE QUERY!")
+            return False
         finally:
             # Close the connection
             cur.close()
             connection.close()
 
-        return result
+        # result None mean when there should be result
+        # Mean there is problem with query
+        return results
 
     # def __del__(self):
     #     self.close_connection(self.connection)
 
     def set_db_variables(self):
+        """
+        Obtains db variables from system env
+        """
         self.username = os.getenv("remote_mysql_username")
         self.password = os.getenv("remote_mysql_password")
         self.ip_address = os.getenv("remote_mysql_ip_address")
@@ -111,16 +159,24 @@ class Database:
             "database": "",  # Access the mysql itself
         }
         try:
-            print("Connecting to Server")
+            print("Connecting To Mysql Server: ", end="")
             self.pool = pooling.MySQLConnectionPool(
                 pool_name="caster", pool_size=5, **config
             )
+
             # connection = mysql.connector.connect(**config)
 
-            # Create a connection to create the database needed
-            connection = self.pool.get_connection()
+            print("SUCCEEDED!")
 
-            print("Connected")
+            print("Creating Database ON Mysql Server")
+
+            # Create a connection to create the database needed
+            connection = self.get_connection()
+
+            # Connection false means couldn't connect to mysql server
+            if connection is None:
+                print("Failed To Create Database!")
+                return False
 
             # Cursor which connects to database
             cursor = connection.cursor()
@@ -129,14 +185,16 @@ class Database:
 
             cursor.execute(f"USE {self.database}")
 
+            # Close connection
             cursor.close()
-            connection.close()
+            connection.close()  # Return connection to pool
 
-            print("Successfully connected to Storage")
+            print("Successfully Created Database!")
 
         except Exception as e:
             print(e)
-            exit()
+            print("Faild To Mysql Server!")
+            return False
 
     def connect_to_table(self):
         cursor, connection = self.connect_to_db()

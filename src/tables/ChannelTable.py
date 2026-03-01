@@ -9,7 +9,7 @@ class ChannelTable:
 
     def createTable(self):
         """Create table if not existing"""
-        sql = f"""
+        sql = """
             CREATE TABLE IF NOT EXISTS channels (
                     id INT AUTO_INCREMENT PRIMARY KEY,
                     name VARCHAR(200) UNIQUE NOT NULL,
@@ -18,7 +18,13 @@ class ChannelTable:
                     );
         """
 
-        self.db.execute(sql)
+        print("Creating Channel Table On Database")
+        result = self.db.execute(sql)
+
+        if result is False:
+            print("Failed!")
+        else:
+            print("Succeeded!")
 
     def insert_all(self, channels: list[CHANNEL]) -> list[CHANNEL] | None:
         """Insert all channels in list"""
