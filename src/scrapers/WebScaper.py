@@ -1,13 +1,9 @@
-from bs4.filter import SoupStrainer
-
 from scrapers.PageFetcher import PageFetcher
 
 
 class WebScaper:
-    def __init__(self, pageUrl: str | None = None, filePath: str | None = None) -> None:
+    def __init__(self, pageUrl: str | None = None) -> None:
         self.pageUrl: str | None = pageUrl
-        self.filePath: str | None = filePath
-        self.scrapedPage: bool = False
         self.pageFetcher = PageFetcher()
         self.soup = ""
 
@@ -16,9 +12,7 @@ class WebScaper:
         and save it to soup
         and set scraped to true to stop scraping the page again"""
         if not self.scrapedPage:
-            self.soup = self.pageFetcher.get_soup(
-                pageUrl=self.pageUrl, filePath=self.filePath
-            )
+            self.soup = self.pageFetcher.get_soup(pageUrl=self.pageUrl)
             self.scrapedPage = True
         return self.soup
 

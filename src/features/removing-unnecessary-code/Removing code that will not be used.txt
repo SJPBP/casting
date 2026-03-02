@@ -1,0 +1,12 @@
+What I Want To Implement?
+I want to remove code that I am not going to use. Like,
+1. Using html in soup.
+2. Folder I am using anymore
+3. Removed getting single data entry from services, scraper, and fetcher
+How It Suppose To Run? 
+
+What Problems It Can Face?
+
+For Each Problems
+
+How It Will Run?

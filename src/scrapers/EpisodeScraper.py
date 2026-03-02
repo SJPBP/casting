@@ -8,8 +8,8 @@ from utils.Date import Date
 
 
 class EpisodeScraper:
-    def __init__(self, pageUrl: str | None = None, filePath: str | None = None) -> None:
-        self.webScraper = WebScaper(pageUrl=pageUrl, filePath=filePath)
+    def __init__(self, pageUrl: str | None = None) -> None:
+        self.webScraper = WebScaper(pageUrl=pageUrl)
         self.timer = TimerService()
         self.Date = Date()
 
@@ -111,20 +111,6 @@ class EpisodeScraper:
             f"Finished extracting all data from the soup in {total_time:.1f} seconds."
         )
         return episodes
-
-    def get_episode(self, date: str):
-        xpath = f'//select[@id="oneclick-episode"]//option[text()="{date}"]'
-        attr = "@value"
-
-        episodePageUrl = self.webScraper.find(xpath=xpath, attr=attr)
-
-        episodePageUrl = episodePageUrl.split("#")[-1]
-
-        episodeFetcher = EpisodeFetcher(pageUrl=episodePageUrl)
-
-        episode = episodeFetcher.get_episode()
-
-        return episode
 
     def extract_data(self, soup):
         xpath = ""

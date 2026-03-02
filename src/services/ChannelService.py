@@ -60,35 +60,6 @@ class ChannelService:
 
         return response
 
-    def get_channel(self, name: str) -> dict:
-        """
-        Obtain data of channel choosen on ApneTV
-
-        Parameters:
-        Name (str): Name of channel on ApneTV
-
-        Return:
-        json: Data of channel
-        """
-        response = {}
-        response["Channels"] = []
-
-        # Obtain data of channel stored in database
-        channel = self.table.get_by_name(name)
-        channel = None
-
-        # There is no data on channel in db
-        if channel is None:
-            # Obtain the data from the website
-            scraper = ChannelScraper(self.pageUrl)
-            channel = scraper.get_channel(name)
-            self.table.insert(channel[0])
-
-        # Put the data of channel in json
-        response["Channels"].append(channel)
-
-        return response
-
     def save_to_db(self, db, channels):
         # Connect to table that will save data
         table = ChannelTable(db)

@@ -1,6 +1,5 @@
 from concurrent.futures import ThreadPoolExecutor
 
-from classes.TVSHOW import TVSHOW
 from scrapers.TVShowScraper import TVShowScraper
 from tables.Database import Database
 from tables.TvShowTable import TvShowTable
@@ -47,39 +46,6 @@ class TVShowService:
 
         for tvshow in tvshows:
             response["TVShows"].append(tvshow)
-
-        return response
-
-    def get_tvshow(self, channel: str, pageUrl: str, name: str):
-        """
-        Retrieve data for the specified TV show in given channel.
-
-        Parameters:
-        channel (str): The title of the channel for which data is being retrieved.
-        pageUrl (str): URL of the channel page on ApneTV.
-        name (str): The title of the TV show for which data is being retrieved.
-        """
-        table = TvShowTable(self.db, channel=channel)
-        show = TVSHOW(channel=channel, pageUrl=pageUrl, name=name)
-
-        response = {}
-        response["TVShows"] = []
-
-        # TV show data is not in the database.
-        tvshow = table.get_by_channel(show)
-
-        # None: There is no data on tv show in db
-        # False: Couldn't even connect to db
-        if tvshow is None or tvshow is False:
-            # Obtain the data from the website
-            scraper = TVShowScraper(pageUrl)
-
-            tvshow = scraper.get_tvshow(name)
-
-            # Save data to db
-            table.insert(tvshow["TVShows"][0])
-
-        response["TVShows"].append(tvshow)
 
         return response
 

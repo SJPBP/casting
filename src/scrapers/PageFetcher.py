@@ -20,17 +20,15 @@ class PageFetcher:
         #     "https": "http://wdgwqags:e0wk07u371r1@142.111.48.253:7030/",
         # }
 
-    def get_soup(self, pageUrl: str | None = None, filePath: str | None = None):
+    def get_soup(self, pageUrl: str | None = None):
         """
         Use filePath or pageUrl
         Return soup of page
         """
-        if filePath is not None:
-            return self.get_soup_from_html_file(filePath)
         if pageUrl is not None:
             return self.get_soup_from_url(pageUrl)
         else:
-            raise Exception("Please provide either File Path or Page URL")
+            raise Exception("Please provide Page URL")
 
     def get_soup_from_url(self, pageUrl):
 
@@ -43,10 +41,6 @@ class PageFetcher:
             print("Request failed:", e, flush=True)
             return None
 
-        # except requests.exceptions.ConnectionError:
-        #     print("Couldn't connect to Internet")
-        #     return ""
-
         if response.status_code != 200:
             print(response.status_code)
             print(response.content.decode())
@@ -54,14 +48,6 @@ class PageFetcher:
             return ""
         else:
             soup = BeautifulSoup(response.text, "lxml")
-
-            # Convert BeautifulSoup object to an XPath-compatible structure
-            xpathSoup = etree.HTML(str(soup))
-            return xpathSoup
-
-    def get_soup_from_html_file(self, filePath):
-        with open(filePath, "r") as htmlFile:
-            soup = BeautifulSoup(htmlFile, "lxml")
 
             # Convert BeautifulSoup object to an XPath-compatible structure
             xpathSoup = etree.HTML(str(soup))

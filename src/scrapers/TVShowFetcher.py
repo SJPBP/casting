@@ -1,12 +1,10 @@
-import re
-
 from classes.TVSHOW import TVSHOW
 from scrapers.WebScaper import WebScaper
 
 
 class TVShowFetcher:
-    def __init__(self, pageUrl: str | None = None, filePath: str | None = None) -> None:
-        self.webScraper = WebScaper(pageUrl=pageUrl, filePath=filePath)
+    def __init__(self, pageUrl: str | None = None) -> None:
+        self.webScraper = WebScaper(pageUrl=pageUrl)
 
     def shallow_search(self):
         """
@@ -55,11 +53,6 @@ class TVShowFetcher:
         description = self.extract_description()
         pageUrl = self.extract_page_url()
         channel = self.extract_channel_name()
-
-        # latest_episode = episodeTable.get_all(1, 0)
-        # if latest_episode is None:
-        #     episodes = scraper.shallow_search
-        #     self.update_episodes()
 
         tvShow = TVSHOW(
             channel=channel,

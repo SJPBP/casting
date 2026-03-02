@@ -1,4 +1,3 @@
-from asyncio import futures
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from classes.CHANNEL import CHANNEL
@@ -7,8 +6,8 @@ from services.TimerService import TimerService
 
 
 class ChannelScraper:
-    def __init__(self, pageUrl: str | None = None, filePath: str | None = None) -> None:
-        self.webScraper = WebScaper(pageUrl=pageUrl, filePath=filePath)
+    def __init__(self, pageUrl: str | None = None) -> None:
+        self.webScraper = WebScaper(pageUrl=pageUrl)
         self.timer = TimerService()
 
     def get_channels(self):
@@ -45,31 +44,12 @@ class ChannelScraper:
 
         return channels
 
-    def get_channel(self, name: str):
-        self.timer.start_timer("find_channel")
-
-        xpath = f'//h2[text()="{name}"]'
-
-        soup = self.webScraper.find(xpath)
-
-        channels = []
-        channel = self.extract_data(soup=soup, allowSingleSearch=True)
-
-        channels.append(channel)
-
-        total_time = self.timer.end_timer("find_channel")
-        print(
-            f"Finished extracting data about channel {name} in {total_time:.2f} seconds"
-        )
-
-        return channels
-
-    def extract_data(self, soup, allowSingleSearch=False):
+    def extract_data(self, soup):
         self.timer.start_timer("EX")
 
-        name = self.extract_name(soup=soup, singleSearch=allowSingleSearch)
-        logoUrl = self.extract_icon(soup=soup, singleSearch=allowSingleSearch)
-        pageUrl = self.extract_page_url(soup=soup, singleSearch=allowSingleSearch)
+        name = self.extract_name(soup=soup)
+        logoUrl = self.extract_icon(soup=soup)
+        pageUrl = self.extract_page_url(soup=soup)
 
         channel = CHANNEL(name=name, logoUrl=logoUrl, pageUrl=pageUrl, id=None)
 
@@ -80,35 +60,23 @@ class ChannelScraper:
 
         return channel
 
-    def extract_name(self, soup, singleSearch: bool):
+    def extract_name(self, soup):
         xpath = "//figure/img"
         attr = "@alt"
-
-        if singleSearch:
-            backtrack = "/.."
-            xpath = backtrack + xpath
 
         # find channel name
         return self.webScraper.find(xpath=xpath, soup=soup, attr=attr)
 
-    def extract_icon(self, soup, singleSearch: bool):
+    def extract_icon(self, soup):
         xpath = "//figure/img"
         attr = "@src"
-
-        if singleSearch:
-            backtrack = "/.."
-            xpath = backtrack + xpath
 
         # find channel icon
         return self.webScraper.find(xpath=xpath, soup=soup, attr=attr)
 
-    def extract_page_url(self, soup, singleSearch: bool):
+    def extract_page_url(self, soup):
         xpath = "//a"
         attr = "@href"
-
-        if singleSearch:
-            backtrack = "/.."
-            xpath = backtrack
 
         # find channel page url
         return self.webScraper.find(xpath=xpath, soup=soup, attr=attr)

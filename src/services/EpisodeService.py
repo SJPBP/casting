@@ -192,39 +192,3 @@ class EpisodeService:
         result = scraper.get_episode()
 
         return result, idx
-
-    def get_episode(self, date: str) -> dict:
-        """
-        Retrieve episode data for a specific date of the given TV show.
-
-        Parameters:
-        date (str): The date for which to retrieve episode data.
-        """
-        table = EpisodeTable(self.db, tvshowName=self.tvshowName)
-
-        response = {}
-        response["Episodes"] = []
-
-        # Obtain Episode data from the database.
-        episode = table.get_by_date(date)
-        print(episode)
-
-        # Episode data is not in the database.
-        # So it means there is no episode fot that date
-        if episode is None:
-            return response
-
-        if episode.contentUrl is None:
-            print("Finding all episode data")
-            scraper = EpisodeFetcher(episode.pageUrl)
-
-            episode = scraper.get_episode()
-            print("Done")
-
-            table.update(episode)
-        else:
-            episode.date = episode.convert_date_from_mysql_to_apnetv_format()
-
-        response["Episodes"].append(episode)
-
-        return response

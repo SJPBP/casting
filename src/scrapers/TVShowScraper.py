@@ -63,6 +63,7 @@ class TVShowScraper:
     def extract_tvshows_data(self, soup, finding_old_show: bool = False):
         self.timer.start_timer("EX")
 
+        # Different type of show needed different type of xpath
         if finding_old_show:
             pageUrl = self.extract_old_page_url(soup=soup)
         else:
@@ -71,6 +72,7 @@ class TVShowScraper:
         tvShowFetcher = TVShowFetcher(pageUrl=pageUrl)
 
         tvShow = tvShowFetcher.get_tv_show()
+
         tvShow.pageUrl = pageUrl
 
         total_time = self.timer.end_timer("EX")
@@ -80,50 +82,14 @@ class TVShowScraper:
 
         return tvShow
 
-    def get_tv_show(self, name: str):
-        newTvShowXpath = f'//div[@data-name="{name}"]'
-
-        # Check tv show in currently running shows
-        try:
-            print("Finding new TV")
-            self.soup = self.webScraper.find(newTvShowXpath)
-
-            pageUrl = self.extract_new_page_url()
-            print("DONE")
-        except Exception:
-            pageUrl = None  # Making sure there is no problem for next operations
-            print("Could't find in currently running tv shows")
-
-        # Check tv show in old shows
-        if pageUrl is None:
-            oldTvShowXpath = f'//ul[@class="old-link-list"]/li/a[@title="{name}"]'
-
-            self.soup = self.webScraper.find(oldTvShowXpath)
-
-            pageUrl = self.extract_old_page_url(singleSearch=True)
-
-        tvShows = []
-        tvShowFetcher = TVShowFetcher(pageUrl=pageUrl)
-
-        tvShow = tvShowFetcher.get_tv_show()
-
-        tvShows.append(tvShow)
-        return tvShows
-
-    def extract_new_page_url(self, soup, singleSearch: bool = False):
+    def extract_new_page_url(self, soup):
         xpath = "/a"
         attr = "@href"
-
-        if singleSearch:
-            xpath = "/.." + xpath
 
         return self.webScraper.find(xpath=xpath, soup=soup, attr=attr)
 
-    def extract_old_page_url(self, soup, singleSearch: bool = False):
+    def extract_old_page_url(self, soup):
         xpath = "/a"
         attr = "@href"
-
-        if singleSearch:
-            xpath = "/.." + xpath
 
         return self.webScraper.find(xpath=xpath, soup=soup, attr=attr)

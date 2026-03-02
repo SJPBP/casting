@@ -5,12 +5,11 @@ from scrapers.WebScaper import WebScaper
 
 
 class EpisodeFetcher:
-    def __init__(self, pageUrl: str | None = None, filePath: str | None = None) -> None:
-        self.webScraper = WebScaper(pageUrl=pageUrl, filePath=filePath)
+    def __init__(self, pageUrl: str | None = None) -> None:
+        self.webScraper = WebScaper(pageUrl=pageUrl)
         self.pageUrl = pageUrl
 
     def get_episode(self):
-
         date: str = str(self.extract_date())
         title: str = str(self.extract_title())
         thumbnail: str = str(self.extract_thumbnail())
