@@ -2,8 +2,9 @@ from scrapers.PageFetcher import PageFetcher
 
 
 class WebScaper:
-    def __init__(self, pageUrl: str | None = None) -> None:
+    def __init__(self, pageUrl: str | None = None, filePath: str | None = None) -> None:
         self.pageUrl: str | None = pageUrl
+        self.scrapedPage: bool = False
         self.pageFetcher = PageFetcher()
         self.soup = ""
 
@@ -16,7 +17,7 @@ class WebScaper:
             self.scrapedPage = True
         return self.soup
 
-    def find(self, xpath: str | None, soup=None, attr=None) -> str:
+    def find(self, xpath: str | None, soup=None, attr=None) -> str | None:
         """Return the text of content found using xpath"""
         if attr is not None:
             xpath = f"{xpath}/{attr}"
@@ -31,9 +32,9 @@ class WebScaper:
 
         except Exception as e:
             print(e)
-            exit()
+            return None
 
-    def find_all(self, xpath: str, soup=None, attr=None) -> str:
+    def find_all(self, xpath: str, soup=None, attr=None) -> str | None:
         if attr is not None:
             xpath = f"{xpath}/{attr}"
 
@@ -41,26 +42,26 @@ class WebScaper:
             if soup is None:
                 soup = self.scrape_page()
 
-            url = soup.xpath(xpath)
+            url: str = soup.xpath(xpath)
 
             return url
 
         except Exception as e:
             print(e)
-            exit()
+            return None
 
-    def runFunction(self, xpath: str | None, soup=None, attr=None) -> str:
+    def runFunction(self, xpath: str | None, soup=None, attr=None) -> str | None:
         """Return the result of function found using xpath"""
         if attr is not None:
             xpath = f"{xpath}/{attr}"
 
         try:
             if soup is None:
-                soup = self.scrape_page()  # Get page
-                text: str = soup.xpath(xpath)  # Find the data from page
+                soup = self.scrape_page()
+                text: str = soup.xpath(xpath)
             else:
-                text: str = soup.xpath(f".{xpath}")  # Find the data from page
-            return text  # Return the data
+                text: str = soup.xpath(f".{xpath}")
+            return text
         except Exception as e:
             print(e)
-            exit()
+            return None
