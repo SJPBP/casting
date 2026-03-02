@@ -81,6 +81,7 @@ class EpisodeService:
         endNumber (int): The ending episode number (inclusive). Defaults to 8.
         oldShow (bool): Indicates whether the TV show has concluded; this value is always `False`.
         """
+        self.timer.start_timer("g")
         print(f"GETTING EPISODES FOR TVSHOW: {self.tvshowName}")
 
         print(f"TRIES LEFT: {self.tries}")
@@ -99,7 +100,6 @@ class EpisodeService:
 
         print("GETTING DATA FROM DB")
 
-        self.timer.start_timer("g")
         # Connect to db and use table named after tvshow
         episodeTable = EpisodeTable(self.db, tvshowName=self.tvshowName)
 
@@ -107,8 +107,6 @@ class EpisodeService:
         episodes: list[EPISODE] = episodeTable.get_all(
             startNumber=startNumber, endNumber=endNumber
         )
-        total = self.timer.end_timer("g")
-        print(f"Getting Data from DB Time: {total}")
 
         # Couldn't connect to database
         # So I can't run next code so just stop
@@ -167,6 +165,8 @@ class EpisodeService:
 
         print("RETURNING DATA")
 
+        total = self.timer.end_timer("g")
+        print(f"Getting Data Took: {total}")
         return response
 
     def insert_all_to_db(self, db, tvshowName, episodes):

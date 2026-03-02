@@ -56,12 +56,6 @@ def get_channels():
     return render_template("channels.html", channels=channels["Channels"])
 
 
-@app.route("/channel/<name>")
-def get_channel(name):
-    channel = channelService.get_channel(name)
-    return channel
-
-
 @app.route("/tvshows/<channelName>/<path:url>", methods=["GET"])
 def get_tvshows(channelName, url):
     channelName = channelName.replace("-", "_")
@@ -71,24 +65,10 @@ def get_tvshows(channelName, url):
     return tvshow
 
 
-@app.route("/tvshow/<channelName>/<path:url>/<string:tvshowName>", methods=["GET"])
-def get_tvshow(channelName, url, tvshowName):
-    channelName = channelName.replace("-", "_")
-    tvshow = tVShowService.get_tvshow(channel=channelName, pageUrl=url, name=tvshowName)
-    return tvshow
-
-
-@app.route("/episode/<tvshowName>/<path:url>/<string:date>")
-def get_episode(tvshowName, url, date):
-    tvshowName = tvshowName.replace(" ", "_")
-
-    episode = episodeService.get_episode(tvshow=tvshowName, pageUrl=url, date=date)
-    return episode
-
-
 @app.route("/episodes")
 def get_episodes_with_limit():
-    timer.start_timer("episodes")
+    timer.start_timer("w")
+    timer.start_timer("arg")
 
     tvshowName = request.args.get("tvshowName")
 
@@ -99,39 +79,44 @@ def get_episodes_with_limit():
     if page <= 0 or page is None:
         page = 1
 
+    t = timer.end_timer("arg")
+
+    print(f"Taking Args Took: {t}")
+
+    timer.start_timer("k")
     tvshowName = tvshowName.replace(" ", "_")
+
+    end = page * 10
+    start = end - 9
+    t = timer.end_timer("k")
+    print(f"Modifcation Took: {t}")
+
+    timer.start_timer("c")
+
     if tvshowName in storeEpisodes:
         episodeService = storeEpisodes[tvshowName]
     else:
         episodeService = EpisodeService(db, tvshowName=tvshowName, pageUrl=url)
         storeEpisodes[tvshowName] = episodeService
 
+    # episodeService = EpisodeService(db, tvshowName=tvshowName, pageUrl=url)
+
+    t = timer.end_timer("c")
+    print(f"Check for Condition Took: {t}")
+
     print("***" * 20)
 
-    end = page * 10
-    start = end - 9
-
+    timer.start_timer("e")
     episodes = episodeService.get_episodes(startNumber=start, endNumber=end)
 
-    total_time = timer.end_timer("episodes")
+    total_time = timer.end_timer("e")
 
     print(f"Getting episodes took {total_time} seconds")
 
+    t = timer.end_timer("w")
+    print(f"Whole mehtod Tood: {t}")
+
     return render_template("episodes.html", episodes=episodes["Episodes"][0], page=page)
-
-
-@app.route("/episodes/<string:tvshowName>/<path:url>/<int:start>/<int:end>")
-def get_episodes(tvshowName, url, start=None, end=None):
-    tvshowName = tvshowName.replace(" ", "_")
-    episodeService = EpisodeService(db, tvshowName=tvshowName, pageUrl=url)
-
-    episodes = episodeService.get_episodes(startNumber=start, endNumber=end)
-    return render_template("episodes.html", tvshows=episodes["Episodes"])
-
-
-@app.route("/devices")
-def get_devices():
-    return {"Devices": ["Living Room TV", "Sofa Room TV"]}
 
 
 def connect_chromecast(deviceName):
@@ -170,27 +155,6 @@ def cast(deviceName="Living Room TV"):
     return render_template("media_player.html")
 
 
-# @app.route("/cast/<string:deviceName>", methods=["GET"])
-# def to_be_deleted_cast(deviceName="Living Room TV"):
-#     thumbnail = request.args.get("thumbnail")
-#     date = request.args.get("date")
-#     title = request.args.get("title")
-#     contentUrl = request.args.get("contentUrl")
-#
-#     caster.find(deviceName)
-#     caster.connect()
-#
-#     name = caster.getDeviceName()
-#
-
-#
-#     caster.cast(cast_info=cast_info)
-#
-#     time.sleep(10)
-#
-#     return render_template("media_player.html", device=deviceName)
-
-
 @app.route("/test_cast", methods=["GET"])
 def test_cast_html():
     return render_template("casting.html", casting_device="Living Room TV")
@@ -207,68 +171,61 @@ def connect(deviceName="Living Room TV"):
 @app.route("/pause")
 def pause():
     device_name = request.args.get("device_name")
+
     player = connect_chromecast(device_name)
-    # connect(device_name)
-    # caster.pause()
     player.pause()
+
     return "Pause"
 
 
 @app.route("/play")
 def play():
     device_name = request.args.get("device_name")
+
     player = connect_chromecast(device_name)
     player.play()
-    # print(device_name)
-    # connect(device_name)
-    # caster.play()
+
     return "Playing"
 
 
 @app.route("/mute")
 def mute():
     device_name = request.args.get("device_name")
-    # print(device_name)
-    # connect(device_name)
+
     player = connect_chromecast(device_name)
     player.mute()
 
-    # caster.mute()
-
-    return "Done"
+    return "Muted"
 
 
 @app.route("/unmute")
 def Unmute():
     device_name = request.args.get("device_name")
-    # print(device_name)
-    # connect(device_name)
 
-    # caster.unmute()
     player = connect_chromecast(device_name)
     player.unmute()
-    return "done"
+
+    return "UnMuted"
 
 
 @app.route("/quit")
 def quit():
     device_name = request.args.get("device_name")
-    # print(device_name)
-    # connect(device_name)
-    #
+
     player = connect_chromecast(device_name)
     player.caster.quit()
 
-    return "done"
+    return "Quitted"
 
 
 @app.route("/get_current_time")
 def get_current_time():
     device_name = request.args.get("device_name")
+
     player = connect_chromecast(device_name)
+
     timestamp = player.get_current_time()
-    # print(device_name)
-    # connect(device_name)
+
     if timestamp is not None:
         return f"{timestamp}"
     else:
@@ -281,20 +238,11 @@ def set_current_time():
     seek = float(request.args.get("timestamp"))
 
     player = connect_chromecast(device_name)
+
     if seek is None:
         player.set_current_time(442.012336)
     else:
         player.set_current_time(seek)
-
-    # device_name = request.args.get("device_name")
-    # print(device_name)
-    # connect(device_name)
-    #
-    # timestamp = caster.get_current_time()
-    #
-    # if timestamp is not None:
-    #     caster.move_to(timestamp - seek)
-    #     pause()
 
     return "Done"
 
@@ -305,7 +253,9 @@ def backward():
     seek = request.args.get("timestamp")
 
     player = connect_chromecast(device_name)
+
     timestamp = player.get_current_time()
+
     player.backward_media_by(timestamp)
 
     return "Done"
@@ -317,7 +267,9 @@ def forward():
     seek = request.args.get("amount")
 
     player = connect_chromecast(device_name)
+
     timestamp = player.get_current_time()
+
     player.forward_media_by(timestamp)
 
     return "Done"
