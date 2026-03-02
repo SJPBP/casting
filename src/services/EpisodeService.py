@@ -22,8 +22,13 @@ class EpisodeService:
         self.tvshowName = tvshowName
         self.pageUrl = pageUrl
 
+        self.timer = TimerService()
+
+        self.episode_time = 0
+
         # Needs to be global to make thread work in background
         self.executor = ThreadPoolExecutor(max_workers=5)
+        self.tries = 3  # After this is 0 run shallow_search in get_episodes
 
         # get all episodes date and urls and save them in db
         self.shallow_search()
@@ -31,33 +36,39 @@ class EpisodeService:
         self.timer = TimerService()
 
     def shallow_search(self):
-        print(f"RUNNING SHALLOW SEARCH ON {self.tvshowName}")
+        print(f"Running Shallow Search On TV Show: {self.tvshowName}")
         episodeTable = EpisodeTable(self.db, tvshowName=self.tvshowName)
-        print(self.tvshowName)
 
+        # Scrape the page with episode date and url
         episodeScraper = EpisodeScraper(pageUrl=self.pageUrl)
 
+        # Check if there is episode and get it
         latest_episode_date: list[EPISODE] | None = episodeTable.latest_episode()
 
-        # Table is filled, but it is behind so start adding until top episode from table
-        if latest_episode_date is None:
-            # Find all the episodes
-            print("Searching All Episodes")
+        # There is no episode data saved to db
+        if latest_episode_date is not None:
+            # Get all the episodes from the scraped page
+            print("Getting Every Episodes Data")
             episodes: list[EPISODE] = episodeScraper.shallow_search()
 
         else:
+            # Convert the episode date to one used in ApneTV
             latest_episode_date = latest_episode_date[
                 0
             ].convert_date_from_mysql_to_apnetv_format()
-            print(f"Searching Episodes After {latest_episode_date}")
 
+            print(f"Getting Episodes Uploaded After: {latest_episode_date}")
+
+            # Get all the episodes released after latest episode saved in db
             episodes: list[EPISODE] = episodeScraper.shallow_search(latest_episode_date)
 
-        if len(episodes) != 0:
-            print("Saving Results")
+        print("Saving Episode Data")
 
-            # self.executor.submit(self.save_to_db, self.db, self.tvshowName, episodes)
-            episodeTable.batch_insert_all(episodes)
+        # Save data to db in background
+        # self.executor.submit(self.insert_all_to_db, self.db, self.tvshowName, episodes)
+
+        # Save it for later use
+        episodeTable.batch_insert_all(episodes)
 
         return True
 
@@ -72,18 +83,32 @@ class EpisodeService:
         """
         print(f"GETTING EPISODES FOR TVSHOW: {self.tvshowName}")
 
-        # Connect to db and use table named after tvshow
-        episodeTable = EpisodeTable(self.db, tvshowName=self.tvshowName)
+        print(f"TRIES LEFT: {self.tries}")
+        run = False
+        if self.tries == 0:
+            run = True
+
+            # self.shallow_search()
+        else:
+            self.tries = 0
+        print(f"TRIES LEFT: {self.tries}")
+        print(f"Runned: {run}")
 
         response = {}
         response["Episodes"] = []
 
         print("GETTING DATA FROM DB")
 
+        self.timer.start_timer("g")
+        # Connect to db and use table named after tvshow
+        episodeTable = EpisodeTable(self.db, tvshowName=self.tvshowName)
+
         # Obtain Episode data from the database.
         episodes: list[EPISODE] = episodeTable.get_all(
             startNumber=startNumber, endNumber=endNumber
         )
+        total = self.timer.end_timer("g")
+        print(f"Getting Data from DB Time: {total}")
 
         # Couldn't connect to database
         # So I can't run next code so just stop
@@ -94,6 +119,7 @@ class EpisodeService:
         # Means there is data which missing in db so I have to things I need to save
         missing_episode: bool = False
 
+        self.timer.start_timer("p")
         with ThreadPoolExecutor(max_workers=15) as executor:
             futures = []
 
@@ -136,6 +162,8 @@ class EpisodeService:
             # episodeTable.batch_update_all(episodes)
 
         response["Episodes"].append(episodes)
+        self.episode_time = self.timer.end_timer("p")
+        print(f"TOOK Time to process data: {self.episode_time}")
 
         print("RETURNING DATA")
 

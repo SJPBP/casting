@@ -29,8 +29,10 @@ class EpisodeScraper:
         soup = self.webScraper.find_all(xpath)
 
         episodes = []
+        total = 0
 
         for index, episodesoup in enumerate(soup):
+            self.timer.start_timer("shallow")
             # Find the date
             xpath = ""
             attr = "text()"
@@ -40,11 +42,12 @@ class EpisodeScraper:
             newest_episode_date = self.Date.convert_date_from_apnetv_to_datetime(date)
 
             if stopDate is not None:
+                # StopDate is date of latest episode saved in db
                 latest_episode_from_db = self.Date.convert_date_from_apnetv_to_datetime(
                     stopDate
                 )
 
-                # There is no new episodes so stop
+                # There is no new episodes on website than one from db so stop
                 if newest_episode_date <= latest_episode_from_db:
                     break
 
@@ -59,9 +62,11 @@ class EpisodeScraper:
 
             episode = EPISODE(date=date, pageUrl=episodePageUrl)
 
-            print("Found ", date)
+            # print("Found ", date)
+            total += self.timer.end_timer("shallow")
             episodes.append(episode)
 
+        print(f"Shallow Search Time: {total}")
         return episodes
 
     def get_episodes(self, startNumber: int = 1, endNumber: int = 8):

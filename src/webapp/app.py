@@ -21,6 +21,8 @@ caster = Caster()
 devices = {}
 timer = TimerService()
 
+storeEpisodes = {}
+
 # obj created by getting chromecast device
 # It will have self.cast = pychromecast.get_chromecasts()[0]
 
@@ -87,21 +89,34 @@ def get_episode(tvshowName, url, date):
 @app.route("/episodes")
 def get_episodes_with_limit():
     timer.start_timer("episodes")
+
     tvshowName = request.args.get("tvshowName")
+
     url = request.args.get("url")
+
     page: int = int(request.args.get("page"))
 
     if page <= 0 or page is None:
         page = 1
+
     tvshowName = tvshowName.replace(" ", "_")
-    episodeService = EpisodeService(db, tvshowName=tvshowName, pageUrl=url)
+    if tvshowName in storeEpisodes:
+        episodeService = storeEpisodes[tvshowName]
+    else:
+        episodeService = EpisodeService(db, tvshowName=tvshowName, pageUrl=url)
+        storeEpisodes[tvshowName] = episodeService
+
     print("***" * 20)
+
     end = page * 10
     start = end - 9
 
     episodes = episodeService.get_episodes(startNumber=start, endNumber=end)
+
     total_time = timer.end_timer("episodes")
+
     print(f"Getting episodes took {total_time} seconds")
+
     return render_template("episodes.html", episodes=episodes["Episodes"][0], page=page)
 
 

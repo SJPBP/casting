@@ -1,0 +1,60 @@
+What I Want To Implement?
+I will save episode [date and url] data I get from website in self.data variable 
+and also save the data in db in background.
+
+
+How It Suppose To Run? 
+1. Connect to db and create(if needed) and use the table named after the tvshow
+2. Scrape the page with episode date and their url
+3. Get the latest episode saved in db
+4. Check if there was any episode saved
+4.1 If No
+4.2 Get all the episodes from the scraped page
+4.3 If Yes
+4.4 Get Episodes Uploaded After latest episode saved in db
+5. Save data to self.data variable
+6. Save data to db in background using thread
+
+What Problems It Can Face?
+1. 
+For Each Problems
+
+How It Will Run?
+
+This idea is scraped because in get_episodes. I use range like 1-10 which means get latest 10 episode from db.
+If I save data in self.data, 
+Then
+	If I only Get Episodes Uploaded After latest episode saved in db
+	Then I can't only those episodes saved and I don't have any older episodes than them.
+	
+For this idea to work I have to always all the data from page.
+
+But 
+This looping through 1355 episodes
+0.041455236980254995
+0.046972137000921066
+0.053012708007372566
+
+This getting 10 episode from db
+0.034530820999862044
+0.010133792000488029
+0.0088519359997008
+0.035326830999110825
+0.0603154189993802
+0.04224324200004048
+
+Getting data from db is little faster than looping through db and sometime if there is less data 
+
+
+With 56 episodes show 
+looping
+0.003540396017342573
+0.003146695984469261
+
+From db
+0.01348561800114112
+0.012626573003217345
+
+So it is better to better to get data from db than to scrape from website
+process	           db			  total		whole method		missing			
+1.5676763919982477+0.013399228002526797 = 1.58107562 -  2.5797395070003404 = 0.998663887
