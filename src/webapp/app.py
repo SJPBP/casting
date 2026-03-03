@@ -93,13 +93,13 @@ def get_episodes_with_limit():
 
     timer.start_timer("c")
 
-    if tvshowName in storeEpisodes:
-        episodeService = storeEpisodes[tvshowName]
-    else:
-        episodeService = EpisodeService(db, tvshowName=tvshowName, pageUrl=url)
-        storeEpisodes[tvshowName] = episodeService
+    # if tvshowName in storeEpisodes:
+    #     episodeService = storeEpisodes[tvshowName]
+    # else:
+    #     episodeService = EpisodeService(db, tvshowName=tvshowName, pageUrl=url)
+    #     storeEpisodes[tvshowName] = episodeService
 
-    # episodeService = EpisodeService(db, tvshowName=tvshowName, pageUrl=url)
+    episodeService = EpisodeService(db, tvshowName=tvshowName, pageUrl=url)
 
     t = timer.end_timer("c")
     print(f"Check for Condition Took: {t}")

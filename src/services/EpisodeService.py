@@ -46,7 +46,7 @@ class EpisodeService:
         latest_episode_date: list[EPISODE] | None = episodeTable.latest_episode()
 
         # There is no episode data saved to db
-        if latest_episode_date is not None:
+        if latest_episode_date is None:
             # Get all the episodes from the scraped page
             print("Getting Every Episodes Data")
             episodes: list[EPISODE] = episodeScraper.shallow_search()
